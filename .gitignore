@@ -42,3 +42,5 @@ Session.vim
 *.out
 *.app
 
+# Other
+log.txt

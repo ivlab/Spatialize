@@ -9,6 +9,8 @@
 cmake_minimum_required (VERSION 2.8.2) 
 project (EXAMPLEVR)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
+
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/../install" CACHE PATH "default install path" FORCE )
 endif()
@@ -21,9 +23,10 @@ endif()
 #aux_source_directory(${CMAKE_SOURCE_DIR} SOURCEFILES})
 #This is how you specific source file individually
 set (SOURCEFILES 
-		example/source/app.cpp)
+		example/source/main.cpp
+		example/source/ExampleVrApp.cpp)
 set (HEADERFILES 
-		"")
+		example/include/ExampleVrApp.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
@@ -33,6 +36,9 @@ source_group("Header Files" FILES ${HEADERFILES})
 #find_package method should be used here.
 ############################################################
 
+set(MinVR_DIR $ENV{MinVR_DIR})
+find_package(MinVR COMPONENTS MVRCore AppKit_GLFW REQUIRED)
+include_directories(${MinVR_INCLUDE_DIRS})
 
 ############################################################
 #End external library searching
@@ -59,18 +65,30 @@ link_directories (
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-  #set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++")
+
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
- 
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
+	LIST(REVERSE MinVR_LIBRARIES)
+	find_package(Threads)
+	find_package(X11)
+	set(LIBS_ALL ${LIBS_ALL} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m ${X11_LIBRARIES})
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   # Windows specific code
 
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+if (MSVC)
+	# Windows specific code
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+
+endif (MSVC)
+
 
 ############################################################
 # Add POSTFIX info
@@ -107,7 +125,7 @@ add_executable(example ${SOURCEFILES})
 #indepdent way it would appear in the command line (i.e. -l<libtoadd>)
 #If the second is way is used you need to sure the directory the lib is
 #in will be found
-target_link_libraries (example ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL} netcdf)
+target_link_libraries (example ${MinVR_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
 
 #Second an example of a library target
 #It should default to making a static library
