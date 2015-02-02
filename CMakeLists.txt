@@ -7,7 +7,7 @@
 #
  
 cmake_minimum_required (VERSION 2.8.2) 
-project (EXAMPLEVR)
+project (ExampleVR)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
 
@@ -50,12 +50,12 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 include_directories (
   .
   ..
-  ${EXAMPLEVR_SOURCE_DIR}/example/include
+  ${ExampleVR_SOURCE_DIR}/example/include
 )
 
 # If you want to add any link directories you can add them here
 link_directories (
-  ${EXAMPLEVR_BINARY_DIR}
+  ${ExampleVR_BINARY_DIR}
 )
 
 ############################################################
@@ -117,7 +117,7 @@ endif()
 ############################################################
 
 #First an example of executable target
-add_executable(example ${SOURCEFILES})
+add_executable(example ${HEADERFILES} ${SOURCEFILES})
 #All of libs should be added here
 #If its a debug-only lib specify it as "debug <libtoadd>"
 #If its a opt-only lib specify it as "optimized <libtoadd>"
@@ -129,7 +129,7 @@ target_link_libraries (example ${MinVR_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LI
 
 #Second an example of a library target
 #It should default to making a static library
-add_library(examplevr ${SOURCEFILES} ${SOURCEFILES})
+add_library(examplevr ${HEADERFILES} ${SOURCEFILES})
 
 #You can also add subprojects that are in subdirectories
 #These subdirectories must contain their own CMakeLists.txt
