@@ -1,6 +1,6 @@
-# ExampleVR
+# Spacialize
 
-This is an example MinVR project which can be used for a base for other projects.
+Spacialize is an open source software packages for loading and manipulating 3D models in various Virtual Reality environments.
 
 ### Build and Install
 
@@ -25,6 +25,6 @@ Install the project:
 
 Run the program:
   ```
-  ./build/Release/example desktop
+  ./build/Release/spacialize desktop
   ```
 

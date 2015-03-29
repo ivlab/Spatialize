@@ -7,7 +7,7 @@
 #
  
 cmake_minimum_required (VERSION 2.8.2) 
-project (ExampleVR)
+project (Spacialize)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
 
@@ -23,10 +23,10 @@ endif()
 #aux_source_directory(${CMAKE_SOURCE_DIR} SOURCEFILES})
 #This is how you specific source file individually
 set (SOURCEFILES 
-		example/source/main.cpp
-		example/source/ExampleVrApp.cpp)
+		spacialize/source/main.cpp
+		spacialize/source/SpacializeApp.cpp)
 set (HEADERFILES 
-		example/include/ExampleVrApp.h)
+		spacialize/include/SpacializeApp.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
@@ -50,12 +50,12 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 include_directories (
   .
   ..
-  ${ExampleVR_SOURCE_DIR}/example/include
+  ${Spacialize_SOURCE_DIR}/spacialize/include
 )
 
 # If you want to add any link directories you can add them here
 link_directories (
-  ${ExampleVR_BINARY_DIR}
+  ${Spacialize_BINARY_DIR}
 )
 
 ############################################################
@@ -138,7 +138,7 @@ endif()
 ############################################################
 
 #First an example of executable target
-add_executable(example ${HEADERFILES} ${SOURCEFILES})
+add_executable(spacialize ${HEADERFILES} ${SOURCEFILES})
 #All of libs should be added here
 #If its a debug-only lib specify it as "debug <libtoadd>"
 #If its a opt-only lib specify it as "optimized <libtoadd>"
@@ -146,19 +146,19 @@ add_executable(example ${HEADERFILES} ${SOURCEFILES})
 #indepdent way it would appear in the command line (i.e. -l<libtoadd>)
 #If the second is way is used you need to sure the directory the lib is
 #in will be found
-target_link_libraries (example ${MinVR_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
+target_link_libraries (spacialize ${MinVR_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
 
 #Second an example of a library target
 #It should default to making a static library
-add_library(examplevr ${HEADERFILES} ${SOURCEFILES})
+add_library(spacializevr ${HEADERFILES} ${SOURCEFILES})
 
 #You can also add subprojects that are in subdirectories
 #These subdirectories must contain their own CMakeLists.txt
 #add_subdirectory (mysubproject)
 
-install(DIRECTORY example/include/ DESTINATION include)
+install(DIRECTORY spacialize/include/ DESTINATION include)
 
-install( TARGETS examplevr example
+install( TARGETS spacializevr spacialize
          LIBRARY DESTINATION lib
          ARCHIVE DESTINATION lib
          RUNTIME DESTINATION bin)
