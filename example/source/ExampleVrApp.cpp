@@ -15,7 +15,9 @@ ExampleVrApp::ExampleVrApp() : MinVR::AbstractMVRApp() {
 }
 
 ExampleVrApp::~ExampleVrApp() {
-	glDeleteBuffersARB(1, _vboId.get());
+	for(std::map<int, GLuint>::iterator iterator = _vboId.begin(); iterator != _vboId.end(); iterator++) {
+		glDeleteBuffersARB(1, &iterator->second);
+	}
 }
 
 void ExampleVrApp::doUserInputAndPreDrawComputation(
@@ -28,7 +30,7 @@ void ExampleVrApp::doUserInputAndPreDrawComputation(
 void ExampleVrApp::initializeContextSpecificVars(int threadId,
 		MinVR::WindowRef window) {
 	initGL();
-	initVBO();
+	initVBO(threadId);
 	initLights();
 
 	glClearColor(0.f, 0.f, 0.f, 0.f);
@@ -39,7 +41,7 @@ void ExampleVrApp::initializeContextSpecificVars(int threadId,
 	}
 }
 
-void ExampleVrApp::initVBO()
+void ExampleVrApp::initVBO(int threadId)
 {
 	// cube ///////////////////////////////////////////////////////////////////////
 	//    v6----- v5
@@ -117,9 +119,9 @@ void ExampleVrApp::initVBO()
     // glBufferDataARB with NULL pointer reserves only memory space.
     // Copy actual data with 2 calls of glBufferSubDataARB, one for vertex coords and one for normals.
     // target flag is GL_ARRAY_BUFFER_ARB, and usage flag is GL_STATIC_DRAW_ARB
-	_vboId.reset(new GLuint(0));
-	glGenBuffersARB(1, _vboId.get());
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, *(_vboId.get()));
+	_vboId[threadId] = GLuint(0);
+	glGenBuffersARB(1, &_vboId[threadId]);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId[threadId]);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices)+sizeof(normals)+sizeof(colors), 0, GL_STATIC_DRAW_ARB);
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(vertices), vertices);                             // copy vertices starting from 0 offest
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices), sizeof(normals), normals);                // copy normals after vertices
@@ -190,7 +192,7 @@ void ExampleVrApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 		std::cout << "GLERROR: "<<err<<std::endl;
 	}
 
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, *(_vboId.get()));
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId[threadId]);
 
     // enable vertex arrays
     glEnableClientState(GL_NORMAL_ARRAY);

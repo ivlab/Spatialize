@@ -18,8 +18,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "MVRCore/Event.H"
 #include <GLFW/glfw3.h>
-#include <boost/thread.hpp>
 #include <vector>
+#include <map>
 
 class ExampleVrApp : public MinVR::AbstractMVRApp {
 public:
@@ -33,10 +33,10 @@ public:
 
 private:
 	void initGL();
-	void initVBO();
+	void initVBO(int threadId);
 	void initLights();
 
-	boost::thread_specific_ptr<GLuint> _vboId;
+	std::map<int, GLuint> _vboId;
 };
 
 #endif /* EXAMPLEVRAPP_H_ */
