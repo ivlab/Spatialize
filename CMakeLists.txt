@@ -12,8 +12,13 @@ project (Spacialize)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/../install" CACHE PATH "default install path" FORCE )
+    set (CMAKE_INSTALL_PREFIX "${Spacialize_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
 endif()
+
+set(Spacialize_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+message(${Spacialize_INSTALL_PREFIX})
+
+option(BUILD_DEPENDENCIES "If enabled, dependencies will be downloaded and built if an installed version is not found" ON)
 
 #This way will auto detect all source files in the directory,
 #while this will work, the preferred technique is to list out
@@ -110,6 +115,49 @@ if (MSVC)
 
 endif (MSVC)
 
+#------------------------------------------
+# Download dependencies
+#------------------------------------------
+if (BUILD_DEPENDENCIES)
+  set(assimp_checkout_Dir ${CMAKE_SOURCE_DIR}/dependencies/assimp)
+  make_directory(${assimp_checkout_Dir})
+  include(ExternalProject)
+endif()
+set(assimp_PREFIX "${assimp_checkout_Dir}")
+set(assimp_INSTALL_DIR "${Spacialize_INSTALL_PREFIX}/assimp")
+
+if (BUILD_DEPENDENCIES)
+  set(assimp_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${assimp_INSTALL_DIR} -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_SAMPLES=OFF -DASSIMP_ENABLE_BOOST_WORKAROUND=ON )
+  set(assimp_DIR "${assimp_INSTALL_DIR}")
+
+  if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		set(assimp_CMAKE_ARGS ${assimp_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD="c++11" -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY="libc++")
+   endif()
+
+   ExternalProject_add(assimp
+		PREFIX ${assimp_PREFIX}
+		GIT_REPOSITORY https://github.com/ivlab/assimp.git
+		GIT_TAG master
+		INSTALL_DIR ${assimp_INSTALL_DIR}
+		CMAKE_ARGS ${assimp_CMAKE_ARGS}
+		UPDATE_COMMAND ""
+   )
+ 
+   set_property(TARGET assimp PROPERTY FOLDER "Dependencies")
+
+endif()
+
+find_package(ZLIB)
+INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+
+set(ASSIMP_INCLUDE_DIR ${assimp_INSTALL_DIR}/include CACHE INTERNAL "Directory of assimp header files")
+if(MSVC)
+	set(ASSIMP_LIBRARY ${assimp_INSTALL_DIR}/lib/assimp.lib CACHE INTERNAL "assimp lib file")
+else()
+	set(ASSIMP_LIBRARY ${assimp_INSTALL_DIR}/lib/libassimp.a CACHE INTERNAL "assimp lib file")
+endif()	
+set(LIBASSIMP_LIBRARIES optimized ${ASSIMP_LIBRARY})
+include_directories(${ASSIMP_INCLUDE_DIR})
 
 ############################################################
 # Add POSTFIX info
@@ -146,7 +194,7 @@ add_executable(spacialize ${HEADERFILES} ${SOURCEFILES})
 #indepdent way it would appear in the command line (i.e. -l<libtoadd>)
 #If the second is way is used you need to sure the directory the lib is
 #in will be found
-target_link_libraries (spacialize ${MinVR_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
+target_link_libraries (spacialize ${MinVR_LIBRARIES} ${LIBASSIMP_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
 
 #Second an example of a library target
 #It should default to making a static library

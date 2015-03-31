@@ -44,3 +44,6 @@ Session.vim
 
 # Other
 log.txt
+
+# dependencies
+dependencies/assimp
