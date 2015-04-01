@@ -10,6 +10,8 @@
 
 using namespace MinVR;
 
+namespace Spatialize {
+
 SpatializeApp::SpatializeApp() : MinVR::AbstractMVRApp() {
 
 }
@@ -227,4 +229,6 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 	glVertex3f(0.f, 0.3f, -1.f);
 	glEnd();
 	*/
+}
+
 }

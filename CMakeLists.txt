@@ -31,7 +31,8 @@ set (SOURCEFILES
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp)
 set (HEADERFILES 
-		spatialize/include/SpatializeApp.h)
+		spatialize/include/SpatializeApp.h
+		spatialize/include/Scene.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################

@@ -21,6 +21,8 @@
 #include <vector>
 #include <map>
 
+namespace Spatialize {
+
 class SpatializeApp : public MinVR::AbstractMVRApp {
 public:
 	SpatializeApp();
@@ -38,5 +40,7 @@ private:
 
 	std::map<int, GLuint> _vboId;
 };
+
+}
 
 #endif /* SPATIALIZEAPP_H_ */
