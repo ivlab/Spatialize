@@ -1,6 +1,6 @@
 # Spatialize
 
-Spatialize is an open source software packages for loading and manipulating 3D models in various Virtual Reality environments.
+Spatialize is an open source software package for loading and manipulating 3D models in various Virtual Reality environments.
 
 ### Build and Install
 
