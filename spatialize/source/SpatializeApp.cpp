@@ -25,6 +25,8 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 	//for(int i=0; i < events.size(); i++) {
 	//	std::cout << events[i]->getName() <<std::endl;
 	//}
+
+	_time = glfwGetTime();
 }
 
 void SpatializeApp::initializeContextSpecificVars(int threadId,
@@ -101,7 +103,7 @@ void SpatializeApp::postInitialization() {
 void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 		MinVR::WindowRef window) {
 
-	_scene[threadId]->draw(0, camera, window);
+	_scene[threadId]->draw(_time, camera, window);
 }
 
 }

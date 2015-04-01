@@ -40,6 +40,7 @@ private:
 	void initLights();
 
 	std::map<int, SceneRef> _scene;
+	float _time;
 };
 
 }

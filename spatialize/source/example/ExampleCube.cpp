@@ -139,8 +139,8 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
 
 	glm::dmat4 translate = glm::translate(glm::dmat4(1.0f), glm::dvec3(0.0f, 0.0f, -5.0f));
 	glm::dvec2 rotAngles(-20.0, 45.0);
-	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y, glm::dvec3(0.0,1.0,0.0));
-	camera->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x, glm::dvec3(1.0,0,0)));
+	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y*time, glm::dvec3(0.0,1.0,0.0));
+	camera->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x*time, glm::dvec3(1.0,0,0)));
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
