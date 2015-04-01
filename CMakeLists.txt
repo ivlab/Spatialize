@@ -30,11 +30,19 @@ option(BUILD_DEPENDENCIES "If enabled, dependencies will be downloaded and built
 set (SOURCEFILES 
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp
-		spatialize/source/example/ExampleCube.cpp)
+		spatialize/source/example/ExampleCube.cpp
+		spatialize/source/mesh/MeshScene.cpp
+		spatialize/source/mesh/concrete/SimpleMesh.cpp
+		spatialize/source/mesh/concrete/assimp/AssimpMeshFactory.cpp)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h
 		spatialize/include/Scene.h
-		spatialize/include/example/ExampleCube.h)
+		spatialize/include/example/ExampleCube.h
+		spatialize/include/mesh/Mesh.h
+		spatialize/include/mesh/MeshFactory.h
+		spatialize/include/mesh/MeshScene.h
+		spatialize/include/mesh/concrete/SimpleMesh.h
+		spatialize/include/mesh/concrete/assimp/AssimpMeshFactory.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
