@@ -20,6 +20,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <map>
+#include "Scene.h"
 
 namespace Spatialize {
 
@@ -38,7 +39,7 @@ private:
 	void initVBO(int threadId);
 	void initLights();
 
-	std::map<int, GLuint> _vboId;
+	std::map<int, SceneRef> _scene;
 };
 
 }
