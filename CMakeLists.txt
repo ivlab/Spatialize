@@ -7,16 +7,16 @@
 #
  
 cmake_minimum_required (VERSION 2.8.2) 
-project (Spacialize)
+project (Spatialize)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${Spacialize_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
+    set (CMAKE_INSTALL_PREFIX "${Spatialize_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
 endif()
 
-set(Spacialize_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-message(${Spacialize_INSTALL_PREFIX})
+set(Spatialize_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+message(${Spatialize_INSTALL_PREFIX})
 
 option(BUILD_DEPENDENCIES "If enabled, dependencies will be downloaded and built if an installed version is not found" ON)
 
@@ -28,10 +28,10 @@ option(BUILD_DEPENDENCIES "If enabled, dependencies will be downloaded and built
 #aux_source_directory(${CMAKE_SOURCE_DIR} SOURCEFILES})
 #This is how you specific source file individually
 set (SOURCEFILES 
-		spacialize/source/main.cpp
-		spacialize/source/SpacializeApp.cpp)
+		spatialize/source/main.cpp
+		spatialize/source/SpatializeApp.cpp)
 set (HEADERFILES 
-		spacialize/include/SpacializeApp.h)
+		spatialize/include/SpatializeApp.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
@@ -55,12 +55,12 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 include_directories (
   .
   ..
-  ${Spacialize_SOURCE_DIR}/spacialize/include
+  ${Spatialize_SOURCE_DIR}/spatialize/include
 )
 
 # If you want to add any link directories you can add them here
 link_directories (
-  ${Spacialize_BINARY_DIR}
+  ${Spatialize_BINARY_DIR}
 )
 
 ############################################################
@@ -124,7 +124,7 @@ if (BUILD_DEPENDENCIES)
   include(ExternalProject)
 endif()
 set(assimp_PREFIX "${assimp_checkout_Dir}")
-set(assimp_INSTALL_DIR "${Spacialize_INSTALL_PREFIX}/assimp")
+set(assimp_INSTALL_DIR "${Spatialize_INSTALL_PREFIX}/assimp")
 
 if (BUILD_DEPENDENCIES)
   set(assimp_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${assimp_INSTALL_DIR} -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_SAMPLES=OFF -DASSIMP_ENABLE_BOOST_WORKAROUND=ON )
@@ -186,7 +186,7 @@ endif()
 ############################################################
 
 #First an example of executable target
-add_executable(spacialize ${HEADERFILES} ${SOURCEFILES})
+add_executable(spatialize ${HEADERFILES} ${SOURCEFILES})
 #All of libs should be added here
 #If its a debug-only lib specify it as "debug <libtoadd>"
 #If its a opt-only lib specify it as "optimized <libtoadd>"
@@ -194,19 +194,19 @@ add_executable(spacialize ${HEADERFILES} ${SOURCEFILES})
 #indepdent way it would appear in the command line (i.e. -l<libtoadd>)
 #If the second is way is used you need to sure the directory the lib is
 #in will be found
-target_link_libraries (spacialize ${MinVR_LIBRARIES} ${LIBASSIMP_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
+target_link_libraries (spatialize ${MinVR_LIBRARIES} ${LIBASSIMP_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
 
 #Second an example of a library target
 #It should default to making a static library
-add_library(spacializevr ${HEADERFILES} ${SOURCEFILES})
+add_library(spatializevr ${HEADERFILES} ${SOURCEFILES})
 
 #You can also add subprojects that are in subdirectories
 #These subdirectories must contain their own CMakeLists.txt
 #add_subdirectory (mysubproject)
 
-install(DIRECTORY spacialize/include/ DESTINATION include)
+install(DIRECTORY spatialize/include/ DESTINATION include)
 
-install( TARGETS spacializevr spacialize
+install( TARGETS spatializevr spatialize
          LIBRARY DESTINATION lib
          ARCHIVE DESTINATION lib
          RUNTIME DESTINATION bin)

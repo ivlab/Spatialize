@@ -9,7 +9,7 @@
 #include "AppKit_GLFW/MVREngineGLFW.H"
 #include "MVRCore/DataFileUtils.H"
 #include <iostream>
-#include "SpacializeApp.h"
+#include "SpatializeApp.h"
 
 int
 main(int argc, char** argv)
@@ -18,7 +18,7 @@ main(int argc, char** argv)
 	MinVR::DataFileUtils::addFileSearchPath("$(G)/src/MinVR/MVRCore/shaders");
 	MinVR::AbstractMVREngine *engine = new MinVR::MVREngineGLFW();
 	engine->init(argc, argv);
-	MinVR::AbstractMVRAppRef app(new SpacializeApp());
+	MinVR::AbstractMVRAppRef app(new SpatializeApp());
 	engine->runApp(app);
 	delete engine;
 

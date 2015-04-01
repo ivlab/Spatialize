@@ -6,28 +6,28 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <SpacializeApp.h>
+#include <SpatializeApp.h>
 
 using namespace MinVR;
 
-SpacializeApp::SpacializeApp() : MinVR::AbstractMVRApp() {
+SpatializeApp::SpatializeApp() : MinVR::AbstractMVRApp() {
 
 }
 
-SpacializeApp::~SpacializeApp() {
+SpatializeApp::~SpatializeApp() {
 	for(std::map<int, GLuint>::iterator iterator = _vboId.begin(); iterator != _vboId.end(); iterator++) {
 		glDeleteBuffersARB(1, &iterator->second);
 	}
 }
 
-void SpacializeApp::doUserInputAndPreDrawComputation(
+void SpatializeApp::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
 	//for(int i=0; i < events.size(); i++) {
 	//	std::cout << events[i]->getName() <<std::endl;
 	//}
 }
 
-void SpacializeApp::initializeContextSpecificVars(int threadId,
+void SpatializeApp::initializeContextSpecificVars(int threadId,
 		MinVR::WindowRef window) {
 	initGL();
 	initVBO(threadId);
@@ -41,7 +41,7 @@ void SpacializeApp::initializeContextSpecificVars(int threadId,
 	}
 }
 
-void SpacializeApp::initVBO(int threadId)
+void SpatializeApp::initVBO(int threadId)
 {
 	// cube ///////////////////////////////////////////////////////////////////////
 	//    v6----- v5
@@ -133,7 +133,7 @@ void SpacializeApp::initVBO(int threadId)
 	}
  }
 
-void SpacializeApp::initGL()
+void SpatializeApp::initGL()
 {
 	glShadeModel(GL_SMOOTH);                    // shading mathod: GL_SMOOTH or GL_FLAT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
@@ -160,7 +160,7 @@ void SpacializeApp::initGL()
 	}
 }
 
-void SpacializeApp::initLights()
+void SpatializeApp::initLights()
 {
 	// set up light colors (ambient, diffuse, specular)
     GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
@@ -182,10 +182,10 @@ void SpacializeApp::initLights()
 	}
 }
 
-void SpacializeApp::postInitialization() {
+void SpatializeApp::postInitialization() {
 }
 
-void SpacializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
+void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 		MinVR::WindowRef window) {
 	GLenum err;
 	while((err = glGetError()) != GL_NO_ERROR) {

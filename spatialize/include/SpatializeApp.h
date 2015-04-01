@@ -6,8 +6,8 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef SPACIALIZEAPP_H_
-#define SPACIALIZEAPP_H_
+#ifndef SPATIALIZEAPP_H_
+#define SPATIALIZEAPP_H_
 
 #include "GL/glew.h"
 #include "MVRCore/AbstractMVRApp.H"
@@ -21,10 +21,10 @@
 #include <vector>
 #include <map>
 
-class SpacializeApp : public MinVR::AbstractMVRApp {
+class SpatializeApp : public MinVR::AbstractMVRApp {
 public:
-	SpacializeApp();
-	virtual ~SpacializeApp();
+	SpatializeApp();
+	virtual ~SpatializeApp();
 
 	void doUserInputAndPreDrawComputation(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 	void initializeContextSpecificVars(int threadId, MinVR::WindowRef window);
@@ -39,4 +39,4 @@ private:
 	std::map<int, GLuint> _vboId;
 };
 
-#endif /* SPACIALIZEAPP_H_ */
+#endif /* SPATIALIZEAPP_H_ */
