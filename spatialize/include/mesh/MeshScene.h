@@ -24,6 +24,9 @@ public:
 
 private:
 	MeshRef _mesh;
+	GLuint _vao;
+	GLuint _vbo;
+	GLuint _indexVbo;
 };
 
 } /* namespace Spatialize */

@@ -10,8 +10,6 @@
 #define SIMPLEMESH_H_
 
 #include "mesh/Mesh.h"
-#include "Scene.h"
-#include <vector>
 
 namespace Spatialize {
 
@@ -20,7 +18,29 @@ public:
 	SimpleMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3>& normals, const std::vector<int>& indices);
 	virtual ~SimpleMesh();
 
-	void draw();
+	const std::vector<int>& getIndices() const {
+		return _indices;
+	}
+
+	void setIndices(const std::vector<int>& indices) {
+		_indices = indices;
+	}
+
+	const std::vector<glm::vec3>& getNormals() const {
+		return _normals;
+	}
+
+	void setNormals(const std::vector<glm::vec3>& normals) {
+		_normals = normals;
+	}
+
+	const std::vector<glm::vec3>& getVertices() const {
+		return _vertices;
+	}
+
+	void setVertices(const std::vector<glm::vec3>& vertices) {
+		_vertices = vertices;
+	}
 
 private:
 	std::vector<glm::vec3> _vertices;

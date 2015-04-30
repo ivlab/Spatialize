@@ -11,14 +11,11 @@
 namespace Spatialize {
 
 SimpleMesh::SimpleMesh(const std::vector<glm::vec3>& vertices,
-		const std::vector<glm::vec3>& normals, const std::vector<int>& indices) : _vertices(vertices), _normals(normals), _indices(indices) {
+		const std::vector<glm::vec3>& normals, const std::vector<int>& indices) : Mesh(), _vertices(vertices), _normals(normals), _indices(indices) {
 }
 
 SimpleMesh::~SimpleMesh() {
 	// TODO Auto-generated destructor stub
-}
-
-void SimpleMesh::draw() {
 }
 
 } /* namespace Spatialize */

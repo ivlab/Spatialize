@@ -19,7 +19,6 @@ MeshScene::~MeshScene() {
 
 void MeshScene::draw(float time, MinVR::CameraRef camera,
 		MinVR::WindowRef window) {
-	_mesh->draw();
 }
 
 } /* namespace Spatialize */
