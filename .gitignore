@@ -45,5 +45,9 @@ Session.vim
 # Other
 log.txt
 
+# Local files
+*-local.*
+Data
+
 # dependencies
 dependencies/assimp
