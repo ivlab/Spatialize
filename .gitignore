@@ -49,5 +49,8 @@ log.txt
 *-local.*
 Data
 
+# XCode
+*.DS_STORE
+
 # dependencies
 dependencies/assimp
