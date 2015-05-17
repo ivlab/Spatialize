@@ -45,7 +45,9 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 
 void SpatializeApp::initVBO(int threadId)
 {
+    _mutex.lock();
 	_scene[threadId] = SceneRef(new ExampleCube());
+    _mutex.unlock();
 }
 
 void SpatializeApp::initGL()

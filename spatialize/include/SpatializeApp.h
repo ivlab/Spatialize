@@ -21,6 +21,7 @@
 #include <vector>
 #include <map>
 #include "Scene.h"
+#include "MVRCore/Thread.h"
 
 namespace Spatialize {
 
@@ -41,6 +42,7 @@ private:
 
 	std::map<int, SceneRef> _scene;
 	float _time;
+    MinVR::Mutex _mutex;
 };
 
 }
