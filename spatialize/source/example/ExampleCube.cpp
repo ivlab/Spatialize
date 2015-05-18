@@ -110,10 +110,15 @@ ExampleCube::ExampleCube() {
 		std::cout << "GLERROR initVBO: "<<err<<std::endl;
 	}
 
+	_boundingBox = Box(glm::vec3(-glm::sqrt(2.0f)), glm::vec3(glm::sqrt(2.0f)));
 }
 
 ExampleCube::~ExampleCube() {
 	glDeleteBuffersARB(1, &_vboId);
+}
+
+const Box& ExampleCube::getBoundingBox() {
+	return _boundingBox;
 }
 
 } /* namespace Spatialize */
@@ -137,7 +142,9 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
     glColorPointer(3, GL_FLOAT, 0, (void*)((sizeof(GLfloat)*108)+(sizeof(GLfloat)*108)));
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
-	glm::dmat4 translate = glm::translate(glm::dmat4(1.0f), glm::dvec3(0.0f, 0.0f, -5.0f));
+    glm::dmat4 objectToWorld = camera->getObjectToWorldMatrix();
+	//glm::dmat4 translate = glm::translate(glm::dmat4(1.0f), glm::dvec3(0.0f, 0.0f, -5.0f));
+	glm::dmat4 translate = objectToWorld;
 	glm::dvec2 rotAngles(-20.0, 45.0);
 	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y*time, glm::dvec3(0.0,1.0,0.0));
 	camera->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x*time, glm::dvec3(1.0,0,0)));
@@ -149,4 +156,7 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
     glDisableClientState(GL_NORMAL_ARRAY);
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+
+    camera->setObjectToWorldMatrix(objectToWorld);
+
 }

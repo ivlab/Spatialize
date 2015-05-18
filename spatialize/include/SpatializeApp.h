@@ -41,6 +41,8 @@ private:
 	void initLights();
 
 	std::map<int, SceneRef> _scene;
+	float _startTime;
+	int _numFrames;
 	float _time;
     MinVR::Mutex _mutex;
 };

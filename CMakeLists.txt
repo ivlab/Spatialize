@@ -30,11 +30,13 @@ option(BUILD_DEPENDENCIES "If enabled, dependencies will be downloaded and built
 set (SOURCEFILES 
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp
-		spatialize/source/example/ExampleCube.cpp)
+		spatialize/source/example/ExampleCube.cpp
+		spatialize/source/Box.cpp)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h
 		spatialize/include/Scene.h
-		spatialize/include/example/ExampleCube.h)
+		spatialize/include/example/ExampleCube.h
+		spatialize/include/Box.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################

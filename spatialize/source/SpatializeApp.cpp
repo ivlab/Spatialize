@@ -14,7 +14,8 @@ using namespace MinVR;
 namespace Spatialize {
 
 SpatializeApp::SpatializeApp() : MinVR::AbstractMVRApp() {
-
+	_startTime = -1;
+	_numFrames = 0;
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -22,11 +23,23 @@ SpatializeApp::~SpatializeApp() {
 
 void SpatializeApp::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
-	//for(int i=0; i < events.size(); i++) {
-	//	std::cout << events[i]->getName() <<std::endl;
-	//}
+	for(int i=0; i < events.size(); i++) {
+		std::cout << events[i]->getName() <<std::endl;
+	}
 
 	_time = glfwGetTime();
+
+	if (_startTime < 0)
+	{
+		_startTime = _time;
+	}
+	else
+	{
+		_numFrames++;
+		float fps = _numFrames/(_time-_startTime);
+		//std::cout << fps << std::endl;
+	}
+
 }
 
 void SpatializeApp::initializeContextSpecificVars(int threadId,
@@ -104,6 +117,16 @@ void SpatializeApp::postInitialization() {
 
 void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 		MinVR::WindowRef window) {
+
+	SceneRef scene = _scene[threadId];
+
+	const Box& box = scene->getBoundingBox();
+	float size = (box.getHigh()-box.getLow()).length();
+
+	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(-box.center()));
+	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*0.5/size));
+
+	camera->setObjectToWorldMatrix(scale);
 
 	_scene[threadId]->draw(_time, camera, window);
 }

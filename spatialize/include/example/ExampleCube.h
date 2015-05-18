@@ -19,10 +19,12 @@ public:
 	ExampleCube();
 	virtual ~ExampleCube();
 
+	const Box& getBoundingBox();
 	void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window);
 
 private:
 	GLuint _vboId;
+	Box _boundingBox;
 };
 
 } /* namespace Spatialize */
