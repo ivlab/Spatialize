@@ -45,6 +45,10 @@ private:
 	int _numFrames;
 	float _time;
     MinVR::Mutex _mutex;
+    bool _touch0;
+    glm::vec2 _pos0;
+    glm::vec3 _tempTrans;
+    glm::vec3 _translation;
 };
 
 }

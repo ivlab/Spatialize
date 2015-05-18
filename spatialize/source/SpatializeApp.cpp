@@ -8,6 +8,7 @@
 
 #include <SpatializeApp.h>
 #include "example/ExampleCube.h"
+#include "MVRCore/StringUtils.H"
 
 using namespace MinVR;
 
@@ -16,6 +17,9 @@ namespace Spatialize {
 SpatializeApp::SpatializeApp() : MinVR::AbstractMVRApp() {
 	_startTime = -1;
 	_numFrames = 0;
+	_touch0 = false;
+	_tempTrans = glm::vec3(0.0f);
+	_translation = glm::vec3(0.0f);
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -25,6 +29,27 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
 	for(int i=0; i < events.size(); i++) {
 		std::cout << events[i]->getName() <<std::endl;
+
+		//std::string down = ;
+		std::string name = events[i]->getName();
+		if (MinVR::startsWith(name, "Touch_Cursor_Down0"))
+		{
+			std::cout << events[i]->getName() <<std::endl;
+			_touch0 = true;
+			_pos0 = events[i]->get2DData();
+		}
+		else if (_touch0 && MinVR::startsWith(name, "Touch_Cursor_Move0"))
+		{
+			glm::dvec4 data = events[i]->get4DData();
+			glm::vec2 trans0 = glm::vec2(data.x, data.y) - _pos0;
+			_tempTrans = glm::vec3(trans0.x, 0.0, trans0.y);
+		}
+		else if (MinVR::startsWith(name, "Touch_Cursor_Up0"))
+		{
+			_touch0 = false;
+			_translation += _tempTrans;
+			_tempTrans = glm::vec3(0.0f);
+		}
 	}
 
 	_time = glfwGetTime();
@@ -123,7 +148,7 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 	const Box& box = scene->getBoundingBox();
 	float size = (box.getHigh()-box.getLow()).length();
 
-	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(-box.center()));
+	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(-box.center() + _translation + _tempTrans));
 	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*0.5/size));
 
 	camera->setObjectToWorldMatrix(scale);
