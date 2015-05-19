@@ -18,8 +18,12 @@ SpatializeApp::SpatializeApp() : MinVR::AbstractMVRApp() {
 	_startTime = -1;
 	_numFrames = 0;
 	_touch0 = false;
+	_touch1 = false;
 	_tempTrans = glm::vec3(0.0f);
 	_translation = glm::vec3(0.0f);
+	_startSize = 1.0f;
+	_tempScale = 1.0f;
+	_scale = 1.0f;
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -34,21 +38,48 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 		std::string name = events[i]->getName();
 		if (MinVR::startsWith(name, "Touch_Cursor_Down0"))
 		{
-			std::cout << events[i]->getName() <<std::endl;
 			_touch0 = true;
 			_pos0 = events[i]->get2DData();
+			_scale0 = _pos0;
+		}
+		else if (MinVR::startsWith(name, "Touch_Cursor_Down1"))
+		{
+			_touch1 = true;
+			_scale1 = events[i]->get2DData();
+			_startSize = glm::length((_scale1 - _scale0));
 		}
 		else if (_touch0 && MinVR::startsWith(name, "Touch_Cursor_Move0"))
 		{
 			glm::dvec4 data = events[i]->get4DData();
-			glm::vec2 trans0 = glm::vec2(data.x, data.y) - _pos0;
-			_tempTrans = glm::vec3(trans0.x, 0.0, trans0.y);
+			_scale0 = glm::vec2(data.x, data.y);
+			if (!_touch1)
+			{
+				glm::vec2 trans0 = glm::vec2(data.x, data.y) - _pos0;
+				_tempTrans = glm::vec3(trans0.x, 0.0, trans0.y);
+			}
+			else
+			{
+				_tempScale = glm::length((_scale1 - _scale0))/_startSize;
+			}
+		}
+		else if (_touch1 && _touch0 && MinVR::startsWith(name, "Touch_Cursor_Move1"))
+		{
+			glm::dvec4 data = events[i]->get4DData();
+			_scale1 = glm::vec2(data.x, data.y);
+			_tempScale = glm::length((_scale1 - _scale0))/_startSize;
 		}
 		else if (MinVR::startsWith(name, "Touch_Cursor_Up0"))
 		{
 			_touch0 = false;
 			_translation += _tempTrans;
 			_tempTrans = glm::vec3(0.0f);
+		}
+		else if (MinVR::startsWith(name, "Touch_Cursor_Up1"))
+		{
+			_scale *= _tempScale;
+			_touch1 = false;
+			_scale1 = _scale0;
+			_tempScale = 1.0f;
 		}
 	}
 
@@ -63,6 +94,7 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 		_numFrames++;
 		float fps = _numFrames/(_time-_startTime);
 		//std::cout << fps << std::endl;
+		//std::cout << _startSize << std::endl;
 	}
 
 }
@@ -146,10 +178,10 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 	SceneRef scene = _scene[threadId];
 
 	const Box& box = scene->getBoundingBox();
-	float size = (box.getHigh()-box.getLow()).length();
+	float size = glm::length((box.getHigh()-box.getLow()));
 
 	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(-box.center() + _translation + _tempTrans));
-	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*0.5/size));
+	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
 
 	camera->setObjectToWorldMatrix(scale);
 
