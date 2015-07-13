@@ -116,7 +116,7 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-	_scene[threadId] = SceneRef(new ExampleCube());
+	_scene[threadId] = SceneRef(new ExampleCube("model/nanosuit.obj"));
     _mutex.unlock();
 }
 
@@ -185,7 +185,9 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 
 	camera->setObjectToWorldMatrix(scale);
 
-	_scene[threadId]->draw(_time, camera, window);
+    Shader shader("shader.vs", "shader.frag");
+
+	_scene[threadId]->draw(_time, camera, window, shader);
 }
 
 }

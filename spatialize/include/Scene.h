@@ -12,6 +12,7 @@
 #include "MVRCore/AbstractCamera.H"
 #include "MVRCore/AbstractWindow.H"
 #include "Box.h"
+#include "Shader.h"
 #include <memory>
 
 namespace MinVR {
@@ -29,7 +30,7 @@ public:
 	virtual ~Scene() {}
 
 	virtual const Box& getBoundingBox() = 0;
-	virtual void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window) = 0;
+	virtual void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window, Shader shader) = 0;
 };
 
 } /* namespace Spatialize */

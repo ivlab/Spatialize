@@ -31,12 +31,24 @@ set (SOURCEFILES
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp
 		spatialize/source/example/ExampleCube.cpp
-		spatialize/source/Box.cpp)
+		spatialize/source/Box.cpp
+		spatialize/include/SOIL/image_DXT.c
+		spatialize/include/SOIL/image_helper.c
+		spatialize/include/SOIL/SOIL.c
+		spatialize/include/SOIL/stb_image_aug.c)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h
 		spatialize/include/Scene.h
 		spatialize/include/example/ExampleCube.h
-		spatialize/include/Box.h)
+		spatialize/include/Box.h
+		spatialize/include/Shader.h
+		spatialize/include/Mesh.h
+		spatialize/include/SOIL/image_DXT.h
+		spatialize/include/SOIL/image_helper.h
+		spatialize/include/SOIL/SOIL.h
+		spatialize/include/SOIL/stb_image_aug.h
+		spatialize/include/SOIL/stbi_DDS_aug.h
+		spatialize/include/SOIL/stbi_DDS_aug_c.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
@@ -87,7 +99,7 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
-
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSOIL")
 	set(Lib_Config "none")
 	set(MinVR_LIBS)
 	FOREACH (LIB ${MinVR_LIBRARIES})
@@ -171,7 +183,9 @@ if(MSVC)
 else()
 	set(ASSIMP_LIBRARY ${assimp_INSTALL_DIR}/lib/libassimp.a CACHE INTERNAL "assimp lib file")
 endif()	
-set(LIBASSIMP_LIBRARIES optimized ${ASSIMP_LIBRARY})
+find_package(ZLIB)
+set(LIBASSIMP_LIBRARIES ${ASSIMP_LIBRARY} ${ZLIB_LIBRARIES})
+
 include_directories(${ASSIMP_INCLUDE_DIR})
 
 ############################################################
