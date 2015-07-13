@@ -48,7 +48,7 @@ ExampleCube::ExampleCube(GLchar *path) {
     this->loadModel(path);
 
     _boundingBox = Box(min, max);
-    //_boundingBox = Box(glm::vec3(-glm::sqrt(2.0f)), glm::vec3(glm::sqrt(2.0f)));
+    //_boundingBox = Box(glm::vec3(-glm::sqrt(32.0f)), glm::vec3(glm::sqrt(32.0f)));
 }
 
 ExampleCube::~ExampleCube() {
