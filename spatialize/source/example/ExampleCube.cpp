@@ -208,7 +208,7 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
     glm::mat4 model;
-    model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
+    model = glm::translate(model, glm::vec3(0.0f, -10.75f, 0.0f));
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
     GLint modelLoc = glGetUniformLocation(shader.Program, "model");
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
