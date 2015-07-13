@@ -16,7 +16,7 @@ main(int argc, char** argv)
 {
 	MinVR::AbstractMVREngine *engine = new MinVR::MVREngineGLFW();
 	engine->init(argc, argv);
-	MinVR::AbstractMVRAppRef app(new Spatialize::SpatializeApp());
+	MinVR::AbstractMVRAppRef app(new Spatialize::SpatializeApp(argv[2]));
 	engine->runApp(app);
 	delete engine;
 

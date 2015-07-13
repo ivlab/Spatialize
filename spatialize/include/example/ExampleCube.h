@@ -10,6 +10,7 @@
 #define EXAMPLECUBE_H_
 
 #include "Scene.h"
+#include "Shader.h"
 #include "GL/glew.h"
 
 namespace Spatialize {
@@ -20,7 +21,7 @@ public:
 	virtual ~ExampleCube();
 
 	const Box& getBoundingBox();
-	void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window);
+	void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window, glm::mat4 object2World);
 
 private:
 	GLuint _vboId;

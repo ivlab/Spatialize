@@ -31,12 +31,16 @@ set (SOURCEFILES
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp
 		spatialize/source/example/ExampleCube.cpp
-		spatialize/source/Box.cpp)
+		spatialize/source/Box.cpp
+		spatialize/source/VRModel.cpp)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h
 		spatialize/include/Scene.h
 		spatialize/include/example/ExampleCube.h
-		spatialize/include/Box.h)
+		spatialize/include/Box.h
+		spatialize/include/Shader.h
+		spatialize/include/Mesh.h
+		spatialize/include/VRModel.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
@@ -87,7 +91,7 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
-
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSOIL")
 	set(Lib_Config "none")
 	set(MinVR_LIBS)
 	FOREACH (LIB ${MinVR_LIBRARIES})
@@ -132,14 +136,22 @@ endif (MSVC)
 if (BUILD_DEPENDENCIES)
   set(assimp_checkout_Dir ${CMAKE_SOURCE_DIR}/dependencies/assimp)
   make_directory(${assimp_checkout_Dir})
+
+  set(soil_dl_Dir ${CMAKE_SOURCE_DIR}/dependencies/SOIL)
+  make_directory(${soil_dl_Dir})
+  
   include(ExternalProject)
 endif()
 set(assimp_PREFIX "${assimp_checkout_Dir}")
 set(assimp_INSTALL_DIR "${Spatialize_INSTALL_PREFIX}/assimp")
 
+set(soil_PREFIX "${soil_dl_Dir}")
+set(soil_INSTALL_DIR "${Spatialize_INSTALL_PREFIX}/SOIL")
+
 if (BUILD_DEPENDENCIES)
   set(assimp_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${assimp_INSTALL_DIR} -DBUILD_SHARED_LIBS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_SAMPLES=OFF -DASSIMP_ENABLE_BOOST_WORKAROUND=ON -DASSIMP_BUILD_TESTS=OFF )
   set(assimp_DIR "${assimp_INSTALL_DIR}")
+  set(soil_DIR "${soil_INSTALL_DIR}")
 
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		set(assimp_CMAKE_ARGS ${assimp_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
@@ -157,8 +169,23 @@ if (BUILD_DEPENDENCIES)
 		CMAKE_ARGS ${assimp_CMAKE_ARGS}
 		UPDATE_COMMAND ""
    )
- 
+
    set_property(TARGET assimp PROPERTY FOLDER "Dependencies")
+
+   ExternalProject_add(SOIL
+		DEPENDS assimp		
+		PREFIX ${soil_PREFIX}
+		URL http://www.lonesock.net/files/soil.zip
+		CONFIGURE_COMMAND "" #mkdir -p ${soil_PREFIX}/src/SOIL/projects/makefile/obj
+		BINARY_DIR "${CMAKE_SOURCE_DIR}/SOIL_makefile"		
+		BUILD_COMMAND make
+		INSTALL_DIR ${soil_INSTALL_DIR}
+		INSTALL_COMMAND make install
+		UPDATE_COMMAND ""
+		PATCH_COMMAND ""
+   )
+
+   set_property(TARGET SOIL PROPERTY FOLDER "Dependencies")
 
 endif()
 
@@ -166,13 +193,19 @@ endif()
 #INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
 set(ASSIMP_INCLUDE_DIR ${assimp_INSTALL_DIR}/include CACHE INTERNAL "Directory of assimp header files")
+set(SOIL_INCLUDE_DIR ${soil_INSTALL_DIR}/include CACHE INTERNAL "Directory of SOIL header files")
 if(MSVC)
 	set(ASSIMP_LIBRARY ${assimp_INSTALL_DIR}/lib/assimp.lib CACHE INTERNAL "assimp lib file")
+	set(SOIL_LIBRARY ${soil_INSTALL_DIR}/lib/SOIL.lib CACHE INTERNAL "SOIL lib file")
 else()
 	set(ASSIMP_LIBRARY ${assimp_INSTALL_DIR}/lib/libassimp.a CACHE INTERNAL "assimp lib file")
+	set(SOIL_LIBRARY ${soil_INSTALL_DIR}/lib/libSOIL.a CACHE INTERNAL "SOIL lib file")
 endif()	
-set(LIBASSIMP_LIBRARIES optimized ${ASSIMP_LIBRARY})
+find_package(ZLIB)
+set(LIBASSIMP_LIBRARIES ${ASSIMP_LIBRARY} ${ZLIB_LIBRARIES})
+
 include_directories(${ASSIMP_INCLUDE_DIR})
+include_directories(${SOIL_INCLUDE_DIR})
 
 ############################################################
 # Add POSTFIX info
@@ -209,7 +242,7 @@ add_executable(spatialize ${HEADERFILES} ${SOURCEFILES})
 #indepdent way it would appear in the command line (i.e. -l<libtoadd>)
 #If the second is way is used you need to sure the directory the lib is
 #in will be found
-target_link_libraries (spatialize ${MinVR_LIBRARIES} ${LIBASSIMP_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
+target_link_libraries (spatialize ${MinVR_LIBRARIES} ${LIBASSIMP_LIBRARIES} ${SOIL_LIBRARY} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
 
 #Second an example of a library target
 #It should default to making a static library
