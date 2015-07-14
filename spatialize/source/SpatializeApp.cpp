@@ -116,7 +116,7 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-	_scene[threadId] = SceneRef(new ExampleCube("model/nanosuit.obj"));
+	_scene[threadId] = SceneRef(new ExampleCube("arc fighter/[.obj] (Sh3d adapted)/Arc170.obj"));
     _mutex.unlock();
 }
 
@@ -184,6 +184,9 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
 
 	camera->setObjectToWorldMatrix(scale);
+
+    /*std::cout << "box: ";
+    std::cout << glm::to_string(box.center()) << std::endl;*/
 
     Shader shader("shader.vs", "shader.frag");
 

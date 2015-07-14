@@ -14,6 +14,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext.hpp>
 #include "MVRCore/Event.H"
 #include <GLFW/glfw3.h>
 #include "SOIL/SOIL.h"
@@ -48,7 +49,10 @@ ExampleCube::ExampleCube(GLchar *path) {
     this->loadModel(path);
 
     _boundingBox = Box(min, max);
-    //_boundingBox = Box(glm::vec3(-glm::sqrt(32.0f)), glm::vec3(glm::sqrt(32.0f)));
+    std::cout << "min: " << glm::to_string(min) << std::endl;
+    std::cout << "max: " << glm::to_string(max) << std::endl;
+    //exit(0);
+    //_boundingBox = Box(glm::vec3(-glm::sqrt(2.0f)), glm::vec3(glm::sqrt(2.0f)));
 }
 
 ExampleCube::~ExampleCube() {
@@ -189,33 +193,33 @@ const Box& ExampleCube::getBoundingBox() {
 void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
 		MinVR::WindowRef window, Shader shader) {
 
-    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	shader.Use();    
-    
-    glm::mat4 view;
-    // Note that we're translating the scene in the reverse direction of where we want to move
-    glm::mat4 projection;
-    
-    view = (glm::mat4) camera->getObjectToWorldMatrix();//glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    projection = glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);    
 
-    GLint viewLoc = glGetUniformLocation(shader.Program, "view");
-    GLint projectionLoc = glGetUniformLocation(shader.Program, "projection");
-
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    MinVR::CameraOffAxis* offAxisCamera = dynamic_cast<MinVR::CameraOffAxis*>(camera.get());
 
     glm::mat4 model;
-    model = glm::translate(model, glm::vec3(0.0f, -10.75f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+    glm::mat4 view;
+    glm::mat4 projection;
+    model = glm::translate(model, glm::vec3( 0.0f,  0.0f,  -20.0f));
+    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+    view = (glm::mat4) offAxisCamera->getLastAppliedViewMatrix(); //glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
+    projection = (glm::mat4) offAxisCamera->getLastAppliedProjectionMatrix(); //glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
+    
+    // Get their uniform location
+    GLint viewLoc = glGetUniformLocation(shader.Program, "view");
+    GLint projLoc = glGetUniformLocation(shader.Program, "projection");
     GLint modelLoc = glGetUniformLocation(shader.Program, "model");
+    // Pass the matrices to the shader
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-    for (GLuint i = 0; i < this->meshes.size(); i++) 
-        this->meshes[i].Draw(shader);
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+    // Note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+    
+    for (GLuint i = 0; i < this->meshes.size(); i++) {
+        this->meshes[i].Draw(shader, camera);
+    }
 
     window->swapBuffers();
-    //camera->setObjectToWorldMatrix(objectToWorld);
 }
