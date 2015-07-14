@@ -116,7 +116,7 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-	_scene[threadId] = SceneRef(new ExampleCube("arc fighter/[.obj] (Sh3d adapted)/Arc170.obj"));
+	_scene[threadId] = SceneRef(new ExampleCube("mnogohome/building.obj"));
     _mutex.unlock();
 }
 
@@ -177,20 +177,24 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 
 	SceneRef scene = _scene[threadId];
 
+    float cameraDistance;
+
 	const Box& box = scene->getBoundingBox();
-	float size = glm::length((box.getHigh()-box.getLow()));
 
-	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(-box.center() + _translation + _tempTrans));
-	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
+    if (box.getHigh().x > box.getHigh().y) cameraDistance = box.getHigh().x;
+    else cameraDistance = box.getHigh().y;
 
-	camera->setObjectToWorldMatrix(scale);
-
-    /*std::cout << "box: ";
-    std::cout << glm::to_string(box.center()) << std::endl;*/
+	glm::dmat4 modelView = (glm::dmat4) glm::translate(glm::mat4(1.0f), glm::vec3(-box.center().x, -box.center().y, (-1.5f * cameraDistance) + -box.getHigh().z));
+    
+	camera->setObjectToWorldMatrix(modelView);
+    
+    std::cout << "lo: " << glm::to_string(box.getLow()) << std::endl;
+    std::cout << "hi: " << glm::to_string(box.getHigh()) << std::endl;
 
     Shader shader("shader.vs", "shader.frag");
-
+    
 	_scene[threadId]->draw(_time, camera, window, shader);
+
 }
 
 }

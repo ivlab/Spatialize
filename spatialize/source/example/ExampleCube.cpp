@@ -49,10 +49,6 @@ ExampleCube::ExampleCube(GLchar *path) {
     this->loadModel(path);
 
     _boundingBox = Box(min, max);
-    std::cout << "min: " << glm::to_string(min) << std::endl;
-    std::cout << "max: " << glm::to_string(max) << std::endl;
-    //exit(0);
-    //_boundingBox = Box(glm::vec3(-glm::sqrt(2.0f)), glm::vec3(glm::sqrt(2.0f)));
 }
 
 ExampleCube::~ExampleCube() {
@@ -98,10 +94,6 @@ Mesh ExampleCube::processMesh(aiMesh *mesh, const aiScene *scene) {
         vect.z = mesh->mVertices[i].z;
         vertex.Position = vect;
 
-        vect.x = mesh->mNormals[i].x;
-        vect.y = mesh->mNormals[i].y;
-        vect.z = mesh->mNormals[i].z;
-        
         if (i == 0)
         {
             min = vect;
@@ -116,6 +108,10 @@ Mesh ExampleCube::processMesh(aiMesh *mesh, const aiScene *scene) {
             if (vect.y > max.y) { max.y = vect.y; }
             if (vect.z > max.z) { max.z = vect.z; }
         }
+
+        vect.x = mesh->mNormals[i].x;
+        vect.y = mesh->mNormals[i].y;
+        vect.z = mesh->mNormals[i].z;
 
         vertex.Normal = vect;
 
@@ -193,7 +189,10 @@ const Box& ExampleCube::getBoundingBox() {
 void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
 		MinVR::WindowRef window, Shader shader) {
 
+    /*UNCOMMENT FOR DEBUGGING BACKGROUND 
+    (since by default a textureless model will match the background)*/
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shader.Use();    
 
@@ -202,9 +201,7 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
-    model = glm::translate(model, glm::vec3( 0.0f,  0.0f,  -20.0f));
-    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-    view = (glm::mat4) offAxisCamera->getLastAppliedViewMatrix(); //glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
+    view = (glm::mat4) camera->getObjectToWorldMatrix(); //offAxisCamera->getLastAppliedViewMatrix(); //glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
     projection = (glm::mat4) offAxisCamera->getLastAppliedProjectionMatrix(); //glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
     
     // Get their uniform location

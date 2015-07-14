@@ -20,6 +20,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <map>
+#include <cmath>
 #include "Scene.h"
 #include "MVRCore/Thread.h"
 
