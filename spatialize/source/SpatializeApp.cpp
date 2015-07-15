@@ -116,7 +116,7 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-	_scene[threadId] = SceneRef(new ExampleCube("mnogohome/building.obj"));
+	_scene[threadId] = SceneRef(new ExampleCube("303 hunting rifle/303 hunting rifle.3ds"));
     _mutex.unlock();
 }
 
@@ -184,12 +184,9 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
     if (box.getHigh().x > box.getHigh().y) cameraDistance = box.getHigh().x;
     else cameraDistance = box.getHigh().y;
 
-	glm::dmat4 modelView = (glm::dmat4) glm::translate(glm::mat4(1.0f), glm::vec3(-box.center().x, -box.center().y, (-1.5f * cameraDistance) + -box.getHigh().z));
+	glm::dmat4 modelView = (glm::dmat4) glm::translate(glm::mat4(1.0f), glm::vec3(-box.center().x, -box.center().y, -cameraDistance + -box.center().z));
     
 	camera->setObjectToWorldMatrix(modelView);
-    
-    std::cout << "lo: " << glm::to_string(box.getLow()) << std::endl;
-    std::cout << "hi: " << glm::to_string(box.getHigh()) << std::endl;
 
     Shader shader("shader.vs", "shader.frag");
     
