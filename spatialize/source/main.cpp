@@ -16,7 +16,11 @@ main(int argc, char** argv)
 {
 	MinVR::AbstractMVREngine *engine = new MinVR::MVREngineGLFW();
 	engine->init(argc, argv);
-	MinVR::AbstractMVRAppRef app(new Spatialize::SpatializeApp());
+    if (!argv[2]) {
+        std::cout << "SPATIALIZE ERROR: No path to model specified." << std::endl;
+        exit(1);
+    }
+	MinVR::AbstractMVRAppRef app(new Spatialize::SpatializeApp(argv[2]));
 	engine->runApp(app);
 	delete engine;
 

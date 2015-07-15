@@ -14,7 +14,7 @@ using namespace MinVR;
 
 namespace Spatialize {
 
-SpatializeApp::SpatializeApp() : MinVR::AbstractMVRApp() {
+SpatializeApp::SpatializeApp(GLchar *path) : MinVR::AbstractMVRApp() {
 	_startTime = -1;
 	_numFrames = 0;
 	_touch0 = false;
@@ -24,6 +24,7 @@ SpatializeApp::SpatializeApp() : MinVR::AbstractMVRApp() {
 	_startSize = 1.0f;
 	_tempScale = 1.0f;
 	_scale = 1.0f;
+    _path = path;
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -116,7 +117,7 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-	_scene[threadId] = SceneRef(new ExampleCube("303 hunting rifle/303 hunting rifle.3ds"));
+	_scene[threadId] = SceneRef(new ExampleCube(_path));
     _mutex.unlock();
 }
 
@@ -125,7 +126,7 @@ void SpatializeApp::initGL()
 	glShadeModel(GL_SMOOTH);                    // shading mathod: GL_SMOOTH or GL_FLAT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
 
-    // enable /disable features
+    // enable /disable feature
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);

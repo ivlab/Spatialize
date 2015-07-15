@@ -28,7 +28,7 @@ namespace Spatialize {
 
 class SpatializeApp : public MinVR::AbstractMVRApp {
 public:
-	SpatializeApp();
+	SpatializeApp(GLchar *path);
 	virtual ~SpatializeApp();
 
 	void doUserInputAndPreDrawComputation(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
@@ -56,6 +56,7 @@ private:
     float _scale;
     float _startSize;
     float _tempScale;
+    GLchar* _path;
 };
 
 }

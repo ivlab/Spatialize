@@ -201,8 +201,10 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
-    view = (glm::mat4) camera->getObjectToWorldMatrix(); 
-    projection = (glm::mat4) offAxisCamera->getLastAppliedProjectionMatrix();
+    /*GLfloat angle = 20.0f;
+    model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 0.0f));*/
+    view = (glm::mat4) camera->getObjectToWorldMatrix(); //offAxisCamera->getLastAppliedViewMatrix(); //glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
+    projection = (glm::mat4) offAxisCamera->getLastAppliedProjectionMatrix(); //glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
     
     // Get their uniform location
     GLint viewLoc = glGetUniformLocation(shader.Program, "view");
