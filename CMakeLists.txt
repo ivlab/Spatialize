@@ -32,6 +32,7 @@ set (SOURCEFILES
 		spatialize/source/SpatializeApp.cpp
 		spatialize/source/example/ExampleCube.cpp
 		spatialize/source/Box.cpp
+		spatialize/source/VRModel.cpp
 		spatialize/include/SOIL/image_DXT.c
 		spatialize/include/SOIL/image_helper.c
 		spatialize/include/SOIL/SOIL.c
@@ -43,6 +44,7 @@ set (HEADERFILES
 		spatialize/include/Box.h
 		spatialize/include/Shader.h
 		spatialize/include/Mesh.h
+		spatialize/include/VRModel.h
 		spatialize/include/SOIL/image_DXT.h
 		spatialize/include/SOIL/image_helper.h
 		spatialize/include/SOIL/SOIL.h

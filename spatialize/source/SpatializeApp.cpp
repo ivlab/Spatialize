@@ -8,13 +8,14 @@
 
 #include <SpatializeApp.h>
 #include "example/ExampleCube.h"
+#include "VRModel.h"
 #include "MVRCore/StringUtils.H"
 
 using namespace MinVR;
 
 namespace Spatialize {
 
-SpatializeApp::SpatializeApp(GLchar *path) : MinVR::AbstractMVRApp() {
+SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_startTime = -1;
 	_numFrames = 0;
 	_touch0 = false;
@@ -117,7 +118,10 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-	_scene[threadId] = SceneRef(new ExampleCube(_path));
+    if (!_path)
+	    _scene[threadId] = SceneRef(new ExampleCube());
+    else
+        _scene[threadId] = SceneRef(new VRModel(_path));
     _mutex.unlock();
 }
 

@@ -14,170 +14,109 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/ext.hpp>
 #include "MVRCore/Event.H"
 #include <GLFW/glfw3.h>
-#include "SOIL/SOIL.h"
+
+#include <assimp/Importer.hpp>
 
 namespace Spatialize {
 
-GLint TextureFromFile(const char* path, std::string directory)
-{
-     //Generate texture ID and load texture data 
-    std::string filename = string(path);
-    filename = directory + '/' + filename;
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    int width,height;
-    unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-    // Assign texture to ID
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);    
+ExampleCube::ExampleCube() {
 
-    // Parameters
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    SOIL_free_image_data(image);
-    return textureID;
-}
+	// cube ///////////////////////////////////////////////////////////////////////
+	//    v6----- v5
+	//   /|      /|
+	//  v1------v0|
+	//  | |     | |
+	//  | |v7---|-|v4
+	//  |/      |/
+	//  v2------v3
 
-ExampleCube::ExampleCube(GLchar *path) {
-    this->loadModel(path);
+	// vertex coords array for glDrawArrays() =====================================
+	// A cube has 6 sides and each side has 2 triangles, therefore, a cube consists
+	// of 36 vertices (6 sides * 2 tris * 3 vertices = 36 vertices). And, each
+	// vertex is 3 components (x,y,z) of floats, therefore, the size of vertex
+	// array is 108 floats (36 * 3 = 108).
+	GLfloat vertices[]  = { 1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,      // v0-v1-v2 (front)
+						   -1.0f,-1.0f, 1.0f,   1.0f,-1.0f, 1.0f,   1.0f, 1.0f, 1.0f,      // v2-v3-v0
 
-    _boundingBox = Box(min, max);
+							1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f,   1.0f,-1.0f,-1.0f,      // v0-v3-v4 (right)
+							1.0f,-1.0f,-1.0f,   1.0f, 1.0f,-1.0f,   1.0f, 1.0f, 1.0f,      // v4-v5-v0
+
+							1.0f, 1.0f, 1.0f,   1.0f, 1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,      // v0-v5-v6 (top)
+						   -1.0f, 1.0f,-1.0f,  -1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f,      // v6-v1-v0
+
+						   -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,      // v1-v6-v7 (left)
+						   -1.0f,-1.0f,-1.0f,  -1.0f,-1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,      // v7-v2-v1.0
+
+						   -1.0f,-1.0f,-1.0f,   1.0f,-1.0f,-1.0f,   1.0f,-1.0f, 1.0f,      // v7-v4-v3 (bottom)
+							1.0f,-1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,  -1.0f,-1.0f,-1.0f,      // v3-v2-v7
+
+							1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,      // v4-v7-v6 (back)
+						   -1.0f, 1.0f,-1.0f,   1.0f, 1.0f,-1.0f,   1.0f,-1.0f,-1.0f };    // v6-v5-v4
+
+	// normal array
+	GLfloat normals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
+							0, 0, 1,   0, 0, 1,   0, 0, 1,      // v2-v3-v0
+
+							1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v3-v4 (right)
+							1, 0, 0,   1, 0, 0,   1, 0, 0,      // v4-v5-v0
+
+							0, 1, 0,   0, 1, 0,   0, 1, 0,      // v0-v5-v6 (top)
+							0, 1, 0,   0, 1, 0,   0, 1, 0,      // v6-v1-v0
+
+						   -1, 0, 0,  -1, 0, 0,  -1, 0, 0,      // v1-v6-v7 (left)
+						   -1, 0, 0,  -1, 0, 0,  -1, 0, 0,      // v7-v2-v1
+
+							0,-1, 0,   0,-1, 0,   0,-1, 0,      // v7-v4-v3 (bottom)
+							0,-1, 0,   0,-1, 0,   0,-1, 0,      // v3-v2-v7
+
+							0, 0,-1,   0, 0,-1,   0, 0,-1,      // v4-v7-v6 (back)
+							0, 0,-1,   0, 0,-1,   0, 0,-1 };    // v6-v5-v4
+
+	// color array
+	GLfloat colors[]    = { 1, 1, 1,   1, 1, 0,   1, 0, 0,      // v0-v1-v2 (front)
+							1, 0, 0,   1, 0, 1,   1, 1, 1,      // v2-v3-v0
+
+							1, 1, 1,   1, 0, 1,   0, 0, 1,      // v0-v3-v4 (right)
+							0, 0, 1,   0, 1, 1,   1, 1, 1,      // v4-v5-v0
+
+							1, 1, 1,   0, 1, 1,   0, 1, 0,      // v0-v5-v6 (top)
+							0, 1, 0,   1, 1, 0,   1, 1, 1,      // v6-v1-v0
+
+							1, 1, 0,   0, 1, 0,   0, 0, 0,      // v1-v6-v7 (left)
+							0, 0, 0,   1, 0, 0,   1, 1, 0,      // v7-v2-v1
+
+							0, 0, 0,   0, 0, 1,   1, 0, 1,      // v7-v4-v3 (bottom)
+							1, 0, 1,   1, 0, 0,   0, 0, 0,      // v3-v2-v7
+
+							0, 0, 1,   0, 0, 0,   0, 1, 0,      // v4-v7-v6 (back)
+							0, 1, 0,   0, 1, 1,   0, 0, 1 };    // v6-v5-v4
+
+
+    // create vertex buffer objects, you need to delete them when program exits
+    // Try to put both vertex coords array, vertex normal array and vertex color in the same buffer object.
+    // glBufferDataARB with NULL pointer reserves only memory space.
+    // Copy actual data with 2 calls of glBufferSubDataARB, one for vertex coords and one for normals.
+    // target flag is GL_ARRAY_BUFFER_ARB, and usage flag is GL_STATIC_DRAW_ARB
+	_vboId = GLuint(0);
+	glGenBuffersARB(1, &_vboId);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices)+sizeof(normals)+sizeof(colors), 0, GL_STATIC_DRAW_ARB);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(vertices), vertices);                             // copy vertices starting from 0 offest
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices), sizeof(normals), normals);                // copy normals after vertices
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices)+sizeof(normals), sizeof(colors), colors);  // copy colours after normals
+
+	GLenum err;
+	if((err = glGetError()) != GL_NO_ERROR) {
+		std::cout << "GLERROR initVBO: "<<err<<std::endl;
+	}
+
+	_boundingBox = Box(glm::vec3(-glm::sqrt(16.0f)), glm::vec3(glm::sqrt(16.0f)));
 }
 
 ExampleCube::~ExampleCube() {
-
-}
-
-void ExampleCube::loadModel(std::string path) {
-    Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
-    if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
-    {
-        cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
-        return;
-    }
-    this->directory = path.substr(0, path.find_last_of('/'));
-
-    this->processNode(scene->mRootNode, scene);
-}
-
-void ExampleCube::processNode(aiNode *node, const aiScene *scene) {
-    for (GLuint i = 0; i < node->mNumMeshes; i++) {
-        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        this->meshes.push_back(this->processMesh(mesh, scene));
-    }
-
-    for (GLuint i = 0; i < node->mNumChildren; i++) {
-        this->processNode(node->mChildren[i], scene);
-    }
-}
-
-Mesh ExampleCube::processMesh(aiMesh *mesh, const aiScene *scene) {
-    vector<Vertex> vertices;
-    vector<GLuint> indices;
-    vector<Texture> textures;
-
-    for (GLuint i = 0; i < mesh->mNumVertices; i++) {
-        Vertex vertex;
-
-        glm::vec3 vect;
-        vect.x = mesh->mVertices[i].x;
-        vect.y = mesh->mVertices[i].y;
-        vect.z = mesh->mVertices[i].z;
-        vertex.Position = vect;
-
-        if (i == 0)
-        {
-            min = vect;
-            max = vect;
-        }
-        else
-        {
-            if (vect.x < min.x) { min.x = vect.x; }
-            if (vect.y < min.y) { min.y = vect.y; }
-            if (vect.z < min.z) { min.z = vect.z; }
-            if (vect.x > max.x) { max.x = vect.x; }
-            if (vect.y > max.y) { max.y = vect.y; }
-            if (vect.z > max.z) { max.z = vect.z; }
-        }
-
-        vect.x = mesh->mNormals[i].x;
-        vect.y = mesh->mNormals[i].y;
-        vect.z = mesh->mNormals[i].z;
-
-        vertex.Normal = vect;
-
-        if(mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
-        {
-            glm::vec2 vec;
-            vec.x = mesh->mTextureCoords[0][i].x; 
-            vec.y = mesh->mTextureCoords[0][i].y;
-            vertex.TexCoords = vec;
-        }
-        else
-            vertex.TexCoords = glm::vec2(0.0f, 0.0f);  
-
-        vertices.push_back(vertex);
-    }
-
-    for(GLuint i = 0; i < mesh->mNumFaces; i++)
-    {
-        aiFace face = mesh->mFaces[i];
-        // Retrieve all indices of the face and store them in the indices vector
-        for(GLuint j = 0; j < face.mNumIndices; j++)
-            indices.push_back(face.mIndices[j]);
-    }
-
-    if (mesh->mMaterialIndex >= 0) {
-        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-
-        vector<Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-        vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    }
-
-    return Mesh(vertices, indices, textures);    
-}
-
-vector<Texture> ExampleCube::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
-{
-    vector<Texture> textures;
-    for(GLuint i = 0; i < mat->GetTextureCount(type); i++)
-    {
-        aiString str;
-        mat->GetTexture(type, i, &str);
-        // Check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
-        GLboolean skip = false;
-        for(GLuint j = 0; j < textures_loaded.size(); j++)
-        {
-            if(textures_loaded[j].path == str)
-            {
-                textures.push_back(textures_loaded[j]);
-                skip = true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
-                break;
-            }
-        }
-        if(!skip)
-        {   // If texture hasn't been loaded already, load it
-            Texture texture;
-            texture.id = TextureFromFile(str.C_Str(), this->directory);
-            texture.type = typeName;
-            texture.path = str;
-            textures.push_back(texture);
-            this->textures_loaded.push_back(texture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
-        }
-    }
-    return textures;
+	glDeleteBuffersARB(1, &_vboId);
 }
 
 const Box& ExampleCube::getBoundingBox() {
@@ -188,37 +127,38 @@ const Box& ExampleCube::getBoundingBox() {
 
 void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
 		MinVR::WindowRef window, Shader shader) {
+	GLenum err;
+	while((err = glGetError()) != GL_NO_ERROR) {
+		std::cout << "GLERROR: "<<err<<std::endl;
+	}
 
-    /*UNCOMMENT FOR DEBUGGING BACKGROUND 
-    (since by default a textureless model will match the background)*/
-    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	shader.Use();    
+    // enable vertex arrays
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
 
-    MinVR::CameraOffAxis* offAxisCamera = dynamic_cast<MinVR::CameraOffAxis*>(camera.get());
+    // before draw, specify vertex and index arrays with their offsets
+    glNormalPointer(GL_FLOAT, 0, (void*)(sizeof(GLfloat)*108));
+    glColorPointer(3, GL_FLOAT, 0, (void*)((sizeof(GLfloat)*108)+(sizeof(GLfloat)*108)));
+    glVertexPointer(3, GL_FLOAT, 0, 0);
 
-    glm::mat4 model;
-    glm::mat4 view;
-    glm::mat4 projection;
-    /*GLfloat angle = 20.0f;
-    model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 0.0f));*/
-    view = (glm::mat4) camera->getObjectToWorldMatrix(); //offAxisCamera->getLastAppliedViewMatrix(); //glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
-    projection = (glm::mat4) offAxisCamera->getLastAppliedProjectionMatrix(); //glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
-    
-    // Get their uniform location
-    GLint viewLoc = glGetUniformLocation(shader.Program, "view");
-    GLint projLoc = glGetUniformLocation(shader.Program, "projection");
-    GLint modelLoc = glGetUniformLocation(shader.Program, "model");
-    // Pass the matrices to the shader
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    // Note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-    glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    
-    for (GLuint i = 0; i < this->meshes.size(); i++) {
-        this->meshes[i].Draw(shader, camera);
-    }
+    glm::dmat4 objectToWorld = camera->getObjectToWorldMatrix();
+	//glm::dmat4 translate = glm::translate(glm::dmat4(1.0f), glm::dvec3(0.0f, 0.0f, -5.0f));
+	glm::dmat4 translate = objectToWorld;
+	glm::dvec2 rotAngles(-20.0, 45.0);
+	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y*time, glm::dvec3(0.0,1.0,0.0));
+	camera->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x*time, glm::dvec3(1.0,0,0)));
 
-    window->swapBuffers();
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	
+    glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+
+    camera->setObjectToWorldMatrix(objectToWorld);
+	
 }
