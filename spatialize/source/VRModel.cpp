@@ -11,13 +11,10 @@
 #include "MVRCore/AbstractMVRApp.H"
 #include "MVRCore/AbstractCamera.H"
 #include "MVRCore/AbstractWindow.H"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_access.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/ext.hpp>
 #include "MVRCore/Event.H"
 #include <GLFW/glfw3.h>
 #include "SOIL/SOIL.h"
+
 
 namespace Spatialize {
 
@@ -43,12 +40,6 @@ GLint TextureFromFile(const char* path, std::string directory)
     glBindTexture(GL_TEXTURE_2D, 0);
     SOIL_free_image_data(image);
     return textureID;
-}
-
-VRModel::VRModel(GLchar *path) {
-    this->loadModel(path);
-
-    _boundingBox = Box(min, max);
 }
 
 VRModel::~VRModel() {
@@ -187,29 +178,28 @@ const Box& VRModel::getBoundingBox() {
 } /* namespace Spatialize */
 
 void Spatialize::VRModel::draw(float time, MinVR::CameraRef camera,
-        MinVR::WindowRef window, Shader shader) {
+        MinVR::WindowRef window, glm::mat4 objectToWorld) {
 
     /*UNCOMMENT FOR DEBUGGING BACKGROUND 
     (since by default a textureless model will match the background)*/
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    shader.Use();    
+    _shader.Use();    
 
     MinVR::CameraOffAxis* offAxisCamera = dynamic_cast<MinVR::CameraOffAxis*>(camera.get());
 
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
-    /*GLfloat angle = 20.0f;
-    model = glm::rotate(model, angle, glm::vec3(0.0f, 0.0f, 0.0f));*/
-    view = (glm::mat4) camera->getObjectToWorldMatrix(); //offAxisCamera->getLastAppliedViewMatrix(); //glm::translate(view, glm::vec3(0.0f, 0.0f, -20.0f));
+    
+    view = (glm::mat4) offAxisCamera->getLastAppliedViewMatrix(); //camera->getObjectToWorld();
     projection = (glm::mat4) offAxisCamera->getLastAppliedProjectionMatrix(); //glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
     
     // Get their uniform location
-    GLint viewLoc = glGetUniformLocation(shader.Program, "view");
-    GLint projLoc = glGetUniformLocation(shader.Program, "projection");
-    GLint modelLoc = glGetUniformLocation(shader.Program, "model");
+    GLint viewLoc = glGetUniformLocation(_shader.Program, "view");
+    GLint projLoc = glGetUniformLocation(_shader.Program, "projection");
+    GLint modelLoc = glGetUniformLocation(_shader.Program, "model");
     // Pass the matrices to the shader
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -217,8 +207,6 @@ void Spatialize::VRModel::draw(float time, MinVR::CameraRef camera,
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
     
     for (GLuint i = 0; i < this->meshes.size(); i++) {
-        this->meshes[i].Draw(shader, camera);
+        this->meshes[i].Draw(_shader, camera);
     }
-
-    window->swapBuffers();
 }

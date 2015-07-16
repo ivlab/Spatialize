@@ -19,11 +19,13 @@ namespace Spatialize {
 
 class VRModel : public Scene {
 public:
-    VRModel(GLchar *path);
+    VRModel(GLchar *path) : _shader("shader.vs", "shader.frag"), _boundingBox(min, max) {
+        this->loadModel(path);
+    }
     virtual ~VRModel();
 
     const Box& getBoundingBox();
-    void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window, Shader shader);
+    void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window, glm::mat4 objectToWorld);
 
 private:
     //GLuint VBO, VAO, EBO, texture1, texture2;
@@ -36,6 +38,7 @@ private:
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
     vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
+    Shader _shader;
     Box _boundingBox;
 };
 

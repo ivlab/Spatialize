@@ -7,6 +7,10 @@
  */
 
 #include <SpatializeApp.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext.hpp>
 #include "example/ExampleCube.h"
 #include "VRModel.h"
 #include "MVRCore/StringUtils.H"
@@ -178,25 +182,19 @@ void SpatializeApp::postInitialization() {
 }
 
 void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
-		MinVR::WindowRef window) {
+        MinVR::WindowRef window) {
 
-	SceneRef scene = _scene[threadId];
+    SceneRef scene = _scene[threadId];
 
-    float cameraDistance;
+    const Box& box = scene->getBoundingBox();
+    float size = glm::length((box.getHigh()-box.getLow()));
 
-	const Box& box = scene->getBoundingBox();
-
-    if (box.getHigh().x > box.getHigh().y) cameraDistance = box.getHigh().x;
-    else cameraDistance = box.getHigh().y;
-
-	glm::dmat4 modelView = (glm::dmat4) glm::translate(glm::mat4(1.0f), glm::vec3(-box.center().x, -box.center().y, -cameraDistance + -box.center().z));
-    
-	camera->setObjectToWorldMatrix(modelView);
-
-    Shader shader("shader.vs", "shader.frag");
-    
-	_scene[threadId]->draw(_time, camera, window, shader);
-
+    glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(-box.center() + _translation + _tempTrans));
+    glm::mat4 scale = glm::scale(trans, glm::vec3(1.0f*_scale*_tempScale/size));
+ 
+    glm::mat4 objectToWorld = scale;
+ 
+    _scene[threadId]->draw(_time, camera, window, objectToWorld);
 }
 
 }

@@ -126,7 +126,7 @@ const Box& ExampleCube::getBoundingBox() {
 } /* namespace Spatialize */
 
 void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
-		MinVR::WindowRef window, Shader shader) {
+		MinVR::WindowRef window, glm::mat4 object2World) {
 	GLenum err;
 	while((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "GLERROR: "<<err<<std::endl;
