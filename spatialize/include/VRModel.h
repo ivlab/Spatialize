@@ -19,7 +19,8 @@ namespace Spatialize {
 
 class VRModel : public Scene {
 public:
-    VRModel(GLchar *path) : _shader("shader.vs", "shader.frag"), _boundingBox(min, max) {
+    VRModel(GLchar *path) : _shader("shader.vs", "shader.frag"), 
+      _light("light.vs", "light.frag"), _boundingBox(min, max) {
         this->loadModel(path);
     }
     virtual ~VRModel();
@@ -39,6 +40,7 @@ private:
     vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
     Shader _shader;
+    Shader _light;
     Box _boundingBox;
 };
 

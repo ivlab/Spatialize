@@ -180,20 +180,46 @@ const Box& VRModel::getBoundingBox() {
 void Spatialize::VRModel::draw(float time, MinVR::CameraRef camera,
         MinVR::WindowRef window, glm::mat4 objectToWorld) {
 
+    MinVR::CameraOffAxis* offAxisCamera = dynamic_cast<MinVR::CameraOffAxis*>(camera.get());
+
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(2.3f, -1.6f, -3.0f),
+        glm::vec3(-1.7f, 0.9f, 1.0f)
+    };
+
+
     /*UNCOMMENT FOR DEBUGGING BACKGROUND 
     (since by default a textureless model will match the background)*/
+    
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     _shader.Use();    
 
-    MinVR::CameraOffAxis* offAxisCamera = dynamic_cast<MinVR::CameraOffAxis*>(camera.get());
+    glUniform3f(glGetUniformLocation(_shader.Program, "viewPos"), offAxisCamera->getLookVector().x, offAxisCamera->getLookVector().y, offAxisCamera->getLookVector().z);
+
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[0].position"), pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);     
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[0].ambient"), 0.05f, 0.05f, 0.05f);       
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[0].diffuse"), 1.0f, 1.0f, 1.0f); 
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[0].specular"), 1.0f, 1.0f, 1.0f);
+    glUniform1f(glGetUniformLocation(_shader.Program, "pointLights[0].constant"), 1.0f);
+    glUniform1f(glGetUniformLocation(_shader.Program, "pointLights[0].linear"), 0.009);
+    glUniform1f(glGetUniformLocation(_shader.Program, "pointLights[0].quadratic"), 0.0032);      
+    // Point light 2
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[1].position"), pointLightPositions[1].x, pointLightPositions[1].y, pointLightPositions[1].z);     
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[1].ambient"), 0.05f, 0.05f, 0.05f);       
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[1].diffuse"), 1.0f, 1.0f, 1.0f); 
+    glUniform3f(glGetUniformLocation(_shader.Program, "pointLights[1].specular"), 1.0f, 1.0f, 1.0f);
+    glUniform1f(glGetUniformLocation(_shader.Program, "pointLights[1].constant"), 1.0f);
+    glUniform1f(glGetUniformLocation(_shader.Program, "pointLights[1].linear"), 0.009);
+    glUniform1f(glGetUniformLocation(_shader.Program, "pointLights[1].quadratic"), 0.0032);  
 
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
     
-    view = (glm::mat4) offAxisCamera->getLastAppliedViewMatrix(); //camera->getObjectToWorld();
+    model = objectToWorld;
+    view = (glm::mat4) offAxisCamera->getLastAppliedViewMatrix(); //glm::translate(view, glm::vec3(0.0f, -8.0f, -20.0f));
     projection = (glm::mat4) offAxisCamera->getLastAppliedProjectionMatrix(); //glm::perspective(45.0f, 800.0f / 600.0f, 0.1f, 100.0f);
     
     // Get their uniform location
@@ -209,4 +235,8 @@ void Spatialize::VRModel::draw(float time, MinVR::CameraRef camera,
     for (GLuint i = 0; i < this->meshes.size(); i++) {
         this->meshes[i].Draw(_shader, camera);
     }
+
+    _light.Use();
+    glUniformMatrix4fv(glGetUniformLocation(_light.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(glGetUniformLocation(_light.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 }
