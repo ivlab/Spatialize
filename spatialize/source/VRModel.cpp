@@ -13,7 +13,7 @@
 #include "MVRCore/AbstractWindow.H"
 #include "MVRCore/Event.H"
 #include <GLFW/glfw3.h>
-#include "SOIL/SOIL.h"
+#include <SOIL.h>
 
 
 namespace Spatialize {
