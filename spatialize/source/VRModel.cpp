@@ -85,7 +85,7 @@ Mesh VRModel::processMesh(aiMesh *mesh, const aiScene *scene) {
         vect.z = mesh->mVertices[i].z;
         vertex.Position = vect;
 
-        if (i == 0)
+        if (!min.x && !min.y && !min.z && !max.x && !max.y && !max.z)
         {
             min = vect;
             max = vect;

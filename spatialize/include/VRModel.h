@@ -20,8 +20,12 @@ namespace Spatialize {
 class VRModel : public Scene {
 public:
     VRModel(GLchar *path) : _shader("shader.vs", "shader.frag"), 
-      _light("light.vs", "light.frag"), _boundingBox(min, max) {
+      _light("light.vs", "light.frag") {
         this->loadModel(path);
+        _boundingBox = Box(min, max);
+        std::cout << glm::to_string(min) << std::endl;
+        std::cout << glm::to_string(max) << std::endl;
+        //exit(0);
     }
     virtual ~VRModel();
 

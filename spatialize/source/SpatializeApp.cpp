@@ -187,12 +187,21 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
     SceneRef scene = _scene[threadId];
 
     const Box& box = scene->getBoundingBox();
-    float size = glm::length((box.getHigh()-box.getLow()));
+    /*float size = glm::length((box.getHigh()-box.getLow()));
 
     glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(-box.center() + _translation + _tempTrans));
-    glm::mat4 scale = glm::scale(trans, glm::vec3(1.0f*_scale*_tempScale/size));
- 
-    glm::mat4 objectToWorld = scale;
+    glm::mat4 scale = glm::scale(modelView, glm::vec3(1.0f*_scale*_tempScale/size));*/
+
+    float cameraDistance;
+
+    if ((box.getHigh().x - box.getLow().x) > (box.getHigh().y - box.getLow().y)) 
+        cameraDistance = box.getHigh().x - box.getLow().x;
+    else 
+        cameraDistance = box.getHigh().y - box.getLow().y;
+
+    glm::mat4 modelView = glm::translate(glm::mat4(1.0f), glm::vec3(-box.center().x, -box.center().y, -cameraDistance + -box.center().z));
+
+    glm::mat4 objectToWorld = modelView;
  
     _scene[threadId]->draw(_time, camera, window, objectToWorld);
 }
