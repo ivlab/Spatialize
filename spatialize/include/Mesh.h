@@ -76,10 +76,6 @@ public:
         
         // Also set each mesh's shininess property to a default value (if you want you could extend this to another mesh property and possibly change this value)
         glUniform1i(glGetUniformLocation(shader.Program, "material.shininess"), 16.0f);
-        
-        std::cout << "-------------------------";
-        std::cout << VAO;
-        std::cout << "-------------------------" << std::endl;
 
         glBindVertexArray(VAO);
 
@@ -109,10 +105,6 @@ private:
         glGenBuffers(1, &this->EBO);
 
         glBindVertexArray(this->VAO);
-        
-        std::cout << "SETUP:-------------------";
-        std::cout << this->VAO;
-        std::cout << "-------------------------" << std::endl;
 
         // Load data into vertex buffers
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);

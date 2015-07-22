@@ -52,7 +52,6 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_tempScale = 1.0f;
 	_scale = 1.0f;
     _path = path;
-    this->loadModel(_path);
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -71,7 +70,7 @@ void SpatializeApp::loadModel(std::string path) {
 
     this->processNode(scene->mRootNode, scene);
 
-    sleep(10);
+    //sleep(10);
 }
 
 void SpatializeApp::processNode(aiNode *node, const aiScene *scene) {
@@ -271,11 +270,14 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 
 void SpatializeApp::initVBO(int threadId)
 {
+
     _mutex.lock();
     if (!_path)
 	    _scene[threadId] = SceneRef(new ExampleCube());
-    else
+    else {
+        this->loadModel(_path);
         _scene[threadId] = SceneRef(new VRModel(_meshes, min, max));
+    }
     _mutex.unlock();
 }
 
