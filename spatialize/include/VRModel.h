@@ -14,18 +14,15 @@
 #include "GL/glew.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/ext.hpp>
 
 namespace Spatialize {
 
 class VRModel : public Scene {
 public:
-    VRModel(GLchar *path) : _shader("shader.vs", "shader.frag"), 
-      _light("light.vs", "light.frag") {
-        this->loadModel(path);
+    VRModel(vector<Mesh>& _meshes, glm::vec3 min, glm::vec3 max) : _shader("shader.vs", "shader.frag"), 
+      _light("light.vs", "light.frag"), meshes(_meshes) {
         _boundingBox = Box(min, max);
-        std::cout << glm::to_string(min) << std::endl;
-        std::cout << glm::to_string(max) << std::endl;
-        //exit(0);
     }
     virtual ~VRModel();
 
@@ -34,14 +31,7 @@ public:
 
 private:
     //GLuint VBO, VAO, EBO, texture1, texture2;
-    vector<Mesh> meshes;
-    vector<Texture> textures_loaded;
-    std::string directory;
-    glm::vec3 min, max;
-    void loadModel(std::string path);
-    void processNode(aiNode *node, const aiScene *scene);
-    Mesh processMesh(aiMesh *mesh, const aiScene *scene);
-    vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+    vector<Mesh>& meshes;
 
     Shader _shader;
     Shader _light;

@@ -9,9 +9,6 @@ using namespace std;
 // GL Includes
 #include <GL/glew.h> // Contains all the necessery OpenGL includes
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/ext.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -54,7 +51,7 @@ public:
     }
 
     // Render the mesh
-    void Draw(Shader shader, MinVR::CameraRef camera) 
+    void Draw(Shader shader) 
     {
         // Bind appropriate textures
         GLuint diffuseNr = 1;
@@ -80,6 +77,10 @@ public:
         // Also set each mesh's shininess property to a default value (if you want you could extend this to another mesh property and possibly change this value)
         glUniform1i(glGetUniformLocation(shader.Program, "material.shininess"), 16.0f);
         
+        std::cout << "-------------------------";
+        std::cout << VAO;
+        std::cout << "-------------------------" << std::endl;
+
         glBindVertexArray(VAO);
 
         glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
@@ -108,6 +109,11 @@ private:
         glGenBuffers(1, &this->EBO);
 
         glBindVertexArray(this->VAO);
+        
+        std::cout << "SETUP:-------------------";
+        std::cout << this->VAO;
+        std::cout << "-------------------------" << std::endl;
+
         // Load data into vertex buffers
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
         // A great thing about structs is that their memory layout is sequential for all its items.
