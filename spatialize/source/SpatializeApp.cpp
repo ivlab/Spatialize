@@ -173,7 +173,7 @@ vector<Texture> SpatializeApp::loadMaterialTextures(aiMaterial* mat, aiTextureTy
         if(!skip)
         {   // If texture hasn't been loaded already, load it
             Texture texture;
-            
+            //texture.id = TextureFromFile(str.C_Str(), this->directory);
             texture.type = typeName;
             texture.path = str;
             textures.push_back(texture);
@@ -275,14 +275,15 @@ void SpatializeApp::initVBO(int threadId)
     else {
         for (GLuint i = 0; i < _meshes.size(); i++) {
             for (GLuint j = 0; j < _meshes[i].textures.size(); j++) {
-                Texture texture = _meshes[i].textures[j];
+                Texture& texture = _meshes[i].textures[j];
                 texture.id = TextureFromFile(texture.path.C_Str(), this->directory);
             }
 
             _meshes[i].setupMesh();
         }
-        
+
         _scene[threadId] = SceneRef(new VRModel(_meshes, min, max));
+        //_textures_loaded.clear();
     }
     _mutex.unlock();
 }

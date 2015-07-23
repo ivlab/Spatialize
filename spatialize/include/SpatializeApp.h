@@ -64,6 +64,7 @@ private:
     vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 
     vector<Mesh> _meshes;
+    vector<aiMesh*> _aimeshes;
     vector<Texture> _textures_loaded;
     std::string directory;
     glm::vec3 min, max;

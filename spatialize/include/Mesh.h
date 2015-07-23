@@ -46,6 +46,7 @@ public:
         this->indices = indices;
         this->textures = textures;
 
+        //this->setupMesh();
         // Now that we have all the required data, set the vertex buffers and its attribute pointers.
     }
 
