@@ -47,7 +47,6 @@ public:
         this->textures = textures;
 
         // Now that we have all the required data, set the vertex buffers and its attribute pointers.
-        this->setupMesh();
     }
 
     // Render the mesh
@@ -91,7 +90,6 @@ public:
         }
     }
 
-private:
     /*  Render data  */
     GLuint VAO, VBO, EBO;
 
@@ -129,6 +127,7 @@ private:
 
         glBindVertexArray(0);
     }
+
+private:
+    
 };
-
-

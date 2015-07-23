@@ -57,6 +57,8 @@ private:
     GLchar* _path;
 
     void loadModel(std::string path);
+    void processNodeTextures(aiNode *node, const aiScene *scene);
+    vector<Texture> processMeshTextures(aiMesh *mesh, const aiScene *scene);
     void processNode(aiNode *node, const aiScene *scene);
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
     vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);

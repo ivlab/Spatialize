@@ -52,6 +52,7 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_tempScale = 1.0f;
 	_scale = 1.0f;
     _path = path;
+    this->loadModel(_path);
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -69,8 +70,6 @@ void SpatializeApp::loadModel(std::string path) {
     this->directory = path.substr(0, path.find_last_of('/'));
 
     this->processNode(scene->mRootNode, scene);
-
-    //sleep(10);
 }
 
 void SpatializeApp::processNode(aiNode *node, const aiScene *scene) {
@@ -150,7 +149,7 @@ Mesh SpatializeApp::processMesh(aiMesh *mesh, const aiScene *scene) {
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
-    return Mesh(vertices, indices, textures);    
+    return Mesh(vertices, indices, textures);
 }
 
 vector<Texture> SpatializeApp::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
@@ -174,7 +173,7 @@ vector<Texture> SpatializeApp::loadMaterialTextures(aiMaterial* mat, aiTextureTy
         if(!skip)
         {   // If texture hasn't been loaded already, load it
             Texture texture;
-            texture.id = TextureFromFile(str.C_Str(), this->directory);
+            
             texture.type = typeName;
             texture.path = str;
             textures.push_back(texture);
@@ -270,12 +269,19 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 
 void SpatializeApp::initVBO(int threadId)
 {
-
     _mutex.lock();
     if (!_path)
 	    _scene[threadId] = SceneRef(new ExampleCube());
     else {
-        this->loadModel(_path);
+        for (GLuint i = 0; i < _meshes.size(); i++) {
+            for (GLuint j = 0; j < _meshes[i].textures.size(); j++) {
+                Texture texture = _meshes[i].textures[j];
+                texture.id = TextureFromFile(texture.path.C_Str(), this->directory);
+            }
+
+            _meshes[i].setupMesh();
+        }
+        
         _scene[threadId] = SceneRef(new VRModel(_meshes, min, max));
     }
     _mutex.unlock();

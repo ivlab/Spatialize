@@ -112,7 +112,7 @@ ExampleCube::ExampleCube() {
 		std::cout << "GLERROR initVBO: "<<err<<std::endl;
 	}
 
-	_boundingBox = Box(glm::vec3(-glm::sqrt(2.0f)), glm::vec3(glm::sqrt(2.0f)));
+	_boundingBox = Box(glm::vec3(-glm::sqrt(16.0f)), glm::vec3(glm::sqrt(16.0f)));
 }
 
 ExampleCube::~ExampleCube() {
