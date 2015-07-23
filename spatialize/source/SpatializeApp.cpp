@@ -9,37 +9,12 @@
 #include <SpatializeApp.h>
 #include "example/ExampleCube.h"
 #include "MVRCore/StringUtils.H"
-#include <SOIL.h>
 #include "VRModel.h"
 #include <unistd.h>
 
 using namespace MinVR;
 
 namespace Spatialize {
-
-GLint TextureFromFile(const char* path, std::string directory)
-{
-     //Generate texture ID and load texture data 
-    std::string filename = string(path);
-    filename = directory + '/' + filename;
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    int width,height;
-    unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-    // Assign texture to ID
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);    
-
-    // Parameters
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    SOIL_free_image_data(image);
-    return textureID;
-}
 
 SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_startTime = -1;
@@ -173,7 +148,6 @@ vector<Texture> SpatializeApp::loadMaterialTextures(aiMaterial* mat, aiTextureTy
         if(!skip)
         {   // If texture hasn't been loaded already, load it
             Texture texture;
-            //texture.id = TextureFromFile(str.C_Str(), this->directory);
             texture.type = typeName;
             texture.path = str;
             textures.push_back(texture);
@@ -273,16 +247,7 @@ void SpatializeApp::initVBO(int threadId)
     if (!_path)
 	    _scene[threadId] = SceneRef(new ExampleCube());
     else {
-        for (GLuint i = 0; i < _meshes.size(); i++) {
-            for (GLuint j = 0; j < _meshes[i].textures.size(); j++) {
-                Texture& texture = _meshes[i].textures[j];
-                texture.id = TextureFromFile(texture.path.C_Str(), this->directory);
-            }
-
-            _meshes[i].setupMesh();
-        }
-
-        _scene[threadId] = SceneRef(new VRModel(_meshes, min, max));
+        _scene[threadId] = SceneRef(new VRModel(_meshes, min, max, directory));
         //_textures_loaded.clear();
     }
     _mutex.unlock();
