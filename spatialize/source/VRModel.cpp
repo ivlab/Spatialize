@@ -40,8 +40,7 @@ void Spatialize::VRModel::draw(float time, MinVR::CameraRef camera,
 
     /*UNCOMMENT FOR DEBUGGING BACKGROUND 
     (since by default a textureless model will match the background)*/
-    
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     _shader.Use();    

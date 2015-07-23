@@ -26,7 +26,7 @@ struct Vertex {
 };
 
 struct Texture {
-    GLuint id;
+    GLuint id; //must be recalculated for each new thread/window
     string type;
     aiString path;
 };
@@ -45,9 +45,6 @@ public:
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
-
-        //this->setupMesh();
-        // Now that we have all the required data, set the vertex buffers and its attribute pointers.
     }
 
     // Render the mesh
@@ -91,9 +88,6 @@ public:
         }
     }
 
-    /*  Render data  */
-    GLuint VAO, VBO, EBO;
-
     /*  Functions    */
     // Initializes all the buffer objects/arrays
     void setupMesh()
@@ -130,5 +124,7 @@ public:
     }
 
 private:
+    /*  Render data  */
+    GLuint VAO, VBO, EBO;
     
 };

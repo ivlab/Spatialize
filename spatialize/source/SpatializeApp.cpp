@@ -27,7 +27,8 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_tempScale = 1.0f;
 	_scale = 1.0f;
     _path = path;
-    this->loadModel(_path);
+    if (_path)
+        this->loadModel(_path);
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -246,10 +247,9 @@ void SpatializeApp::initVBO(int threadId)
     _mutex.lock();
     if (!_path)
 	    _scene[threadId] = SceneRef(new ExampleCube());
-    else {
+    else 
         _scene[threadId] = SceneRef(new VRModel(_meshes, min, max, directory));
-        //_textures_loaded.clear();
-    }
+    
     _mutex.unlock();
 }
 
@@ -311,10 +311,6 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
     SceneRef scene = _scene[threadId];
 
     const Box& box = scene->getBoundingBox();
-    /*float size = glm::length((box.getHigh()-box.getLow()));
-
-    glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(-box.center() + _translation + _tempTrans));
-    glm::mat4 scale = glm::scale(modelView, glm::vec3(1.0f*_scale*_tempScale/size));*/
 
     float cameraDistance;
 

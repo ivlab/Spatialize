@@ -37,23 +37,23 @@ ExampleCube::ExampleCube() {
 	// of 36 vertices (6 sides * 2 tris * 3 vertices = 36 vertices). And, each
 	// vertex is 3 components (x,y,z) of floats, therefore, the size of vertex
 	// array is 108 floats (36 * 3 = 108).
-	GLfloat vertices[]  = { 1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,      // v0-v1-v2 (front)
-						   -1.0f,-1.0f, 1.0f,   1.0f,-1.0f, 1.0f,   1.0f, 1.0f, 1.0f,      // v2-v3-v0
+	GLfloat vertices[]  = { 0.25f, 0.25f, 0.25f,  -0.25f, 0.25f, 0.25f,  -0.25f,-0.25f, 0.25f,      // v0-v1-v2 (front)
+						   -0.25f,-0.25f, 0.25f,   0.25f,-0.25f, 0.25f,   0.25f, 0.25f, 0.25f,      // v2-v3-v0
 
-							1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f,   1.0f,-1.0f,-1.0f,      // v0-v3-v4 (right)
-							1.0f,-1.0f,-1.0f,   1.0f, 1.0f,-1.0f,   1.0f, 1.0f, 1.0f,      // v4-v5-v0
+							0.25f, 0.25f, 0.25f,   0.25f,-0.25f, 0.25f,   0.25f,-0.25f,-0.25f,      // v0-v3-v4 (right)
+							0.25f,-0.25f,-0.25f,   0.25f, 0.25f,-0.25f,   0.25f, 0.25f, 0.25f,      // v4-v5-v0
 
-							1.0f, 1.0f, 1.0f,   1.0f, 1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,      // v0-v5-v6 (top)
-						   -1.0f, 1.0f,-1.0f,  -1.0f, 1.0f, 1.0f,   1.0f, 1.0f, 1.0f,      // v6-v1-v0
+							0.25f, 0.25f, 0.25f,   0.25f, 0.25f,-0.25f,  -0.25f, 0.25f,-0.25f,      // v0-v5-v6 (top)
+						   -0.25f, 0.25f,-0.25f,  -0.25f, 0.25f, 0.25f,   0.25f, 0.25f, 0.25f,      // v6-v1-v0
 
-						   -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,      // v1-v6-v7 (left)
-						   -1.0f,-1.0f,-1.0f,  -1.0f,-1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,      // v7-v2-v1.0
+						   -0.25f, 0.25f, 0.25f,  -0.25f, 0.25f,-0.25f,  -0.25f,-0.25f,-0.25f,      // v1-v6-v7 (left)
+						   -0.25f,-0.25f,-0.25f,  -0.25f,-0.25f, 0.25f,  -0.25f, 0.25f, 0.25f,      // v7-v2-v1.0
 
-						   -1.0f,-1.0f,-1.0f,   1.0f,-1.0f,-1.0f,   1.0f,-1.0f, 1.0f,      // v7-v4-v3 (bottom)
-							1.0f,-1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,  -1.0f,-1.0f,-1.0f,      // v3-v2-v7
+						   -0.25f,-0.25f,-0.25f,   0.25f,-0.25f,-0.25f,   0.25f,-0.25f, 0.25f,      // v7-v4-v3 (bottom)
+							0.25f,-0.25f, 0.25f,  -0.25f,-0.25f, 0.25f,  -0.25f,-0.25f,-0.25f,      // v3-v2-v7
 
-							1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,      // v4-v7-v6 (back)
-						   -1.0f, 1.0f,-1.0f,   1.0f, 1.0f,-1.0f,   1.0f,-1.0f,-1.0f };    // v6-v5-v4
+							0.25f,-0.25f,-0.25f,  -0.25f,-0.25f,-0.25f,  -0.25f, 0.25f,-0.25f,      // v4-v7-v6 (back)
+						   -0.25f, 0.25f,-0.25f,   0.25f, 0.25f,-0.25f,   0.25f,-0.25f,-0.25f };    // v6-v5-v4
 
 	// normal array
 	GLfloat normals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
@@ -145,7 +145,7 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
     glm::dmat4 objectToWorld = camera->getObjectToWorldMatrix();
-	//glm::dmat4 translate = glm::translate(glm::dmat4(1.0f), glm::dvec3(0.0f, 0.0f, -5.0f));
+	
 	glm::dmat4 translate = objectToWorld;
 	glm::dvec2 rotAngles(-20.0, 45.0);
 	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y*time, glm::dvec3(0.0,1.0,0.0));

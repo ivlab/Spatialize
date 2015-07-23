@@ -53,7 +53,6 @@ public:
             meshes[i].setupMesh();
         }
 
-
         _boundingBox = Box(min, max);
     }
     virtual ~VRModel();

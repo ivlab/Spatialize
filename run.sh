@@ -1,2 +1,6 @@
 #!/bin/bash
-./build/Release/spatialize desktop $1
+if [ -z "$1" ]; then
+	./build/Release/spatialize desktop
+else
+	./build/Release/spatialize desktop $1
+fi
