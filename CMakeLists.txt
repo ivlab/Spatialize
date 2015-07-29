@@ -91,7 +91,7 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSOIL")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 	set(Lib_Config "none")
 	set(MinVR_LIBS)
 	FOREACH (LIB ${MinVR_LIBRARIES})
@@ -177,12 +177,12 @@ if (BUILD_DEPENDENCIES)
 		PREFIX ${soil_PREFIX}
 		URL http://www.lonesock.net/files/soil.zip
 		CONFIGURE_COMMAND "" #mkdir -p ${soil_PREFIX}/src/SOIL/projects/makefile/obj
-		BINARY_DIR "${CMAKE_SOURCE_DIR}/SOIL_makefile"		
+		BINARY_DIR "${CMAKE_SOURCE_DIR}/dependencies/SOIL_makefile"		
 		BUILD_COMMAND make
 		INSTALL_DIR ${soil_INSTALL_DIR}
 		INSTALL_COMMAND make install
 		UPDATE_COMMAND ""
-		PATCH_COMMAND ""
+		PATCH_COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/dependencies/SOIL/obj
    )
 
    set_property(TARGET SOIL PROPERTY FOLDER "Dependencies")
