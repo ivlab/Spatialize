@@ -2,15 +2,15 @@
 # Type 'make' then 'make install' to complete the installation of the library
 
 # For 'make install' to work, set LOCAL according to your system configuration
-LOCAL = ../build/install/SOIL
+LOCAL = ../../build/install/SOIL
 
 LIB = libSOIL.a
 INC = SOIL.h
 
-SRCDIR = ../dependencies/SOIL/src/SOIL/src
-LIBDIR = ../dependencies/SOIL/src/SOIL/lib
-INCDIR = ../dependencies/SOIL/src/SOIL/src
-OBJDIR = obj
+SRCDIR = ../SOIL/src/SOIL/src
+LIBDIR = ../SOIL/src/SOIL/lib
+INCDIR = ../SOIL/src/SOIL/src
+OBJDIR = ../SOIL/obj
 
 CXX = gcc
 CXXFLAGS = -O2 -s -Wall
