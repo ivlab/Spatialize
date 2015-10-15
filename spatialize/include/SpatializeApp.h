@@ -32,14 +32,16 @@ public:
 	void doUserInputAndPreDrawComputation(const std::vector<MinVR::EventRef> &events, double synchronizedTime);
 	void initializeContextSpecificVars(int threadId, MinVR::WindowRef window);
 	void postInitialization();
-	void drawGraphics(int threadId, MinVR::AbstractCameraRef camera, MinVR::WindowRef window);
+	void drawGraphics(int threadId, MinVR::AbstractCameraRef camera, MinVR::WindowRef window) {}
+	void drawGraphics(MinVR::RenderDevice& renderDevice);
 
 private:
 	void initGL();
 	void initVBO(int threadId);
 	void initLights();
 
-	std::map<int, SceneRef> _scene;
+	//std::map<int, SceneRef> _scene;
+	SceneRef _scene;
 	float _startTime;
 	int _numFrames;
 	float _time;

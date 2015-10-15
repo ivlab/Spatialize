@@ -23,6 +23,14 @@ namespace Spatialize {
 
 ExampleCube::ExampleCube() {
 
+	_boundingBox = Box(glm::vec3(-1.0f), glm::vec3(1.0f));
+}
+
+ExampleCube::~ExampleCube() {
+	cleanupContext();
+}
+
+void ExampleCube::initContextItem() {
 	// cube ///////////////////////////////////////////////////////////////////////
 	//    v6----- v5
 	//   /|      /|
@@ -99,9 +107,9 @@ ExampleCube::ExampleCube() {
     // glBufferDataARB with NULL pointer reserves only memory space.
     // Copy actual data with 2 calls of glBufferSubDataARB, one for vertex coords and one for normals.
     // target flag is GL_ARRAY_BUFFER_ARB, and usage flag is GL_STATIC_DRAW_ARB
-	_vboId = GLuint(0);
-	glGenBuffersARB(1, &_vboId);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId);
+	_vboId.reset(new GLuint(0));
+	glGenBuffersARB(1, _vboId.get());
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, *_vboId);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices)+sizeof(normals)+sizeof(colors), 0, GL_STATIC_DRAW_ARB);
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(vertices), vertices);                             // copy vertices starting from 0 offest
     glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices), sizeof(normals), normals);                // copy normals after vertices
@@ -111,28 +119,26 @@ ExampleCube::ExampleCube() {
 	if((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "GLERROR initVBO: "<<err<<std::endl;
 	}
-
-	_boundingBox = Box(glm::vec3(-1.0f), glm::vec3(1.0f));
 }
 
-ExampleCube::~ExampleCube() {
-	glDeleteBuffersARB(1, &_vboId);
+bool ExampleCube::updateContextItem(bool changed) {
+}
+
+void ExampleCube::cleanupContextItem() {
+	glDeleteBuffersARB(1, _vboId.get());
 }
 
 const Box& ExampleCube::getBoundingBox() {
 	return _boundingBox;
 }
 
-} /* namespace Spatialize */
-
-void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
-		MinVR::WindowRef window, glm::mat4 object2World) {
+void ExampleCube::draw(MinVR::RenderDevice& renderDevice) {
 	GLenum err;
 	while((err = glGetError()) != GL_NO_ERROR) {
 		std::cout << "GLERROR: "<<err<<std::endl;
 	}
 
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, _vboId);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, *_vboId);
 
     // enable vertex arrays
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -144,12 +150,13 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
     glColorPointer(3, GL_FLOAT, 0, (void*)((sizeof(GLfloat)*108)+(sizeof(GLfloat)*108)));
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
-    glm::dmat4 objectToWorld = camera->getObjectToWorldMatrix();
+    glm::dmat4 objectToWorld = renderDevice.getWindowInfo().getCamera()->getObjectToWorldMatrix();
 	
 	glm::dmat4 translate = objectToWorld;
 	glm::dvec2 rotAngles(-20.0, 45.0);
+	float time = 1.0f;
 	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y*time, glm::dvec3(0.0,1.0,0.0));
-	camera->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x*time, glm::dvec3(1.0,0,0)));
+	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x*time, glm::dvec3(1.0,0,0)));
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	
@@ -159,6 +166,8 @@ void Spatialize::ExampleCube::draw(float time, MinVR::CameraRef camera,
 
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 
-    camera->setObjectToWorldMatrix(objectToWorld);
-	
+    renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(objectToWorld);
 }
+
+} /* namespace Spatialize */
+

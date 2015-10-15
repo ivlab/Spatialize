@@ -11,6 +11,9 @@
 #include "MVRCore/StringUtils.H"
 #include "VRModel.h"
 #include <unistd.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace MinVR;
 
@@ -25,10 +28,12 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_translation = glm::vec3(0.0f);
 	_startSize = 1.0f;
 	_tempScale = 1.0f;
-	_scale = 1.0f;
+	_scale = 2.0f;
     _path = path;
     if (_path)
         this->loadModel(_path);
+
+    _scene = SceneRef(new ExampleCube());
 }
 
 SpatializeApp::~SpatializeApp() {
@@ -245,10 +250,10 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-    if (!_path)
-	    _scene[threadId] = SceneRef(new ExampleCube());
-    else 
-        _scene[threadId] = SceneRef(new VRModel(_meshes, min, max, directory));
+    //if (!_path)
+	    _scene->initContext();
+    //else
+       // _scene[threadId] = SceneRef(new VRModel(_meshes, min, max, directory));
     
     _mutex.unlock();
 }
@@ -305,10 +310,8 @@ void SpatializeApp::initLights()
 void SpatializeApp::postInitialization() {
 }
 
-void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
-        MinVR::WindowRef window) {
-
-	SceneRef scene = _scene[threadId];
+void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
+	SceneRef scene = _scene;
 
 	const Box& box = scene->getBoundingBox();
 	float size = glm::length((box.getHigh()-box.getLow()));
@@ -316,9 +319,10 @@ void SpatializeApp::drawGraphics(int threadId, MinVR::AbstractCameraRef camera,
 	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(-box.center() + _translation + _tempTrans));
 	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
 
-	camera->setObjectToWorldMatrix(scale);
+	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(scale);
  
-    _scene[threadId]->draw(_time, camera, window, glm::mat4(scale));
+	scene->draw(renderDevice);
 }
+
 
 }

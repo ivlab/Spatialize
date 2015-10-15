@@ -13,6 +13,7 @@
 #include "MVRCore/AbstractWindow.H"
 #include "Box.h"
 #include <memory>
+#include "MVRCore/GraphicsObject.H"
 
 namespace MinVR {
 typedef AbstractCameraRef CameraRef;
@@ -24,12 +25,11 @@ class Scene;
 typedef std::shared_ptr<class Scene> SceneRef;
 
 
-class Scene {
+class Scene : public MinVR::GraphicsObject {
 public:
 	virtual ~Scene() {}
 
 	virtual const Box& getBoundingBox() = 0;
-	virtual void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window, glm::mat4 objectToWorld) = 0;
 };
 
 } /* namespace Spatialize */

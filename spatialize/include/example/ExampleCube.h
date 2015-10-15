@@ -20,11 +20,14 @@ public:
 	ExampleCube();
 	virtual ~ExampleCube();
 
+	virtual void initContextItem();
+	virtual bool updateContextItem(bool changed);
+	virtual void cleanupContextItem();
 	const Box& getBoundingBox();
-	void draw(float time, MinVR::CameraRef camera, MinVR::WindowRef window, glm::mat4 object2World);
+	void draw(MinVR::RenderDevice& renderDevice);
 
 private:
-	GLuint _vboId;
+	MinVR::ContextSpecificPtr<GLuint> _vboId;
 	Box _boundingBox;
 };
 
