@@ -165,6 +165,8 @@ vector<Texture> SpatializeApp::loadMaterialTextures(aiMaterial* mat, aiTextureTy
 
 void SpatializeApp::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
+	_syncTime = synchronizedTime;
+
 	for(int i=0; i < events.size(); i++) {
 		std::cout << events[i]->getName() <<std::endl;
 

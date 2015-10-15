@@ -35,6 +35,14 @@ public:
 	void drawGraphics(int threadId, MinVR::AbstractCameraRef camera, MinVR::WindowRef window) {}
 	void drawGraphics(MinVR::RenderDevice& renderDevice);
 
+	double getSyncTime() const {
+		return _syncTime;
+	}
+
+	void setSyncTime(double syncTime) {
+		_syncTime = syncTime;
+	}
+
 private:
 	void initGL();
 	void initVBO(int threadId);
@@ -57,6 +65,7 @@ private:
     float _startSize;
     float _tempScale;
     GLchar* _path;
+    double _syncTime;
 
     void loadModel(std::string path);
     void processNodeTextures(aiNode *node, const aiScene *scene);

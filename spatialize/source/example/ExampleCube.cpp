@@ -19,6 +19,8 @@
 
 #include <assimp/Importer.hpp>
 
+#include "SpatializeApp.h"
+
 namespace Spatialize {
 
 ExampleCube::ExampleCube() {
@@ -154,7 +156,8 @@ void ExampleCube::draw(MinVR::RenderDevice& renderDevice) {
 	
 	glm::dmat4 translate = objectToWorld;
 	glm::dvec2 rotAngles(-20.0, 45.0);
-	float time = 1.0f;
+	//float time = 1.0f;
+	float time = ((SpatializeApp*)renderDevice.getAppInfo().app)->getSyncTime();
 	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y*time, glm::dvec3(0.0,1.0,0.0));
 	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x*time, glm::dvec3(1.0,0,0)));
 
