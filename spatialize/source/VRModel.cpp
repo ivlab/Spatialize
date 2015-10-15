@@ -42,7 +42,6 @@ void Spatialize::VRModel::draw(float time, MinVR::CameraRef camera,
     (since by default a textureless model will match the background)*/
     //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     _shader.Use();    
 
     glUniform3f(glGetUniformLocation(_shader.Program, "viewPos"), offAxisCamera->getLookVector().x, offAxisCamera->getLookVector().y, offAxisCamera->getLookVector().z);
