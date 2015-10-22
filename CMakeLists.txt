@@ -32,6 +32,8 @@ set (SOURCEFILES
 		spatialize/source/SpatializeApp.cpp
 		spatialize/source/example/ExampleCube.cpp
 		spatialize/source/Box.cpp
+		spatialize/source/Mesh.cpp
+		spatialize/source/Shader.cpp
 		spatialize/source/VRModel.cpp)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h

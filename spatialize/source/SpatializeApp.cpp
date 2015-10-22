@@ -29,9 +29,11 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_startSize = 1.0f;
 	_tempScale = 1.0f;
 	_scale = 2.0f;
-    _path = path;
+	/*_path = path;
     if (_path)
-        this->loadModel(_path);
+        this->loadModel(_path);*/
+
+	_shader = ShaderRef(new Shader("share/shaders/default.vs", "share/shaders/default.fs"));
 
     _scene = SceneRef(new ExampleCube());
 }
@@ -39,6 +41,7 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 SpatializeApp::~SpatializeApp() {
 }
 
+/*
 void SpatializeApp::loadModel(std::string path) {
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -161,7 +164,7 @@ vector<Texture> SpatializeApp::loadMaterialTextures(aiMaterial* mat, aiTextureTy
         }
     }
     return textures;
-}
+}*/
 
 void SpatializeApp::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
@@ -219,7 +222,7 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 		}
 	}
 
-	_time = glfwGetTime();
+	_time = synchronizedTime;//glfwGetTime();
 
 	if (_startTime < 0)
 	{
@@ -252,11 +255,8 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 void SpatializeApp::initVBO(int threadId)
 {
     _mutex.lock();
-    //if (!_path)
-	    _scene->initContext();
-    //else
-       // _scene[threadId] = SceneRef(new VRModel(_meshes, min, max, directory));
-    
+    _shader->initContext();
+	_scene->initContext();
     _mutex.unlock();
 }
 
@@ -323,7 +323,15 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 
 	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(scale);
  
+	_shader->useProgram();
+	_shader->setParameter("model", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedModelMatrix()));
+	_shader->setParameter("view", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedViewMatrix()));
+	_shader->setParameter("projection", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedProjectionMatrix()));
+
 	scene->draw(renderDevice);
+
+	_shader->releaseProgram();
+
 }
 
 

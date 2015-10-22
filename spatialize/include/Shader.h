@@ -1,106 +1,48 @@
-/*
-from http://learnopengl.com/#!Getting-started/Shaders
-*/
-
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef SHADER_H_
+#define SHADER_H_
 
 #include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
+#include <memory>
+#include "MVRCore/GraphicsContext.H"
+#include "GL/glew.h"
 
-#include <GL/glew.h>
+namespace Spatialize {
 
-class Shader
-{
+class Shader;
+typedef std::shared_ptr<class Shader> ShaderRef;
+
+class Shader : public MinVR::ContextObject {
 public:
-	GLuint Program;
-	// Constructor generates the shader on the fly
-	Shader() {}
+	Shader(const std::string &vertexShader, const std::string &geometryShader, const std::string &fragmentShader);
+	Shader(const std::string &vertexShader, const std::string &fragmentShader);
+	virtual ~Shader();
 
-	Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
-	{
-		// 1. Retrieve the vertex/fragment source code from filePath
-		std::string vertexCode;
-		std::string fragmentCode;
-		std::ifstream vShaderFile;
-		std::ifstream fShaderFile;
+	void init();
+	void useProgram();
+	void releaseProgram();
+	void setParameter(const std::string& name, glm::mat4 matrix);
+	void setParameter(const std::string& name, glm::vec3 vector);
+	void setParameter(const std::string& name, GLuint id);
+	void setParameter(const std::string& name, float* values, int numValues);
 
-		// ensures ifstream objects can throw exceptions:
-		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		try
-		{
-			// Open files
-			vShaderFile.open(vertexPath);
-			fShaderFile.open(fragmentPath);
-			std::stringstream vShaderStream, fShaderStream;
-			// Read file's buffer contents into streams
-			vShaderStream << vShaderFile.rdbuf();
-			fShaderStream << fShaderFile.rdbuf();
-			// close file handlers
-			vShaderFile.close();
-			fShaderFile.close();
-			// Convert stream into string
-			vertexCode = vShaderStream.str();
-			fragmentCode = fShaderStream.str();
-		}
-		catch (std::ifstream::failure e)
-		{
-			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-		}
-		const GLchar* vShaderCode = vertexCode.c_str();
-		const GLchar * fShaderCode = fragmentCode.c_str();
-		// 2. Compile shaders
-		GLuint vertex, fragment;
-		GLint success;
-		GLchar infoLog[512];
-		// Vertex Shader
-		vertex = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertex, 1, &vShaderCode, NULL);
-		glCompileShader(vertex);
-		// Print compile errors if any
-		glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-		}
-		// Fragment Shader
-		fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragment, 1, &fShaderCode, NULL);
-		glCompileShader(fragment);
-		// Print compile errors if any
-		glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-		}
-		// Shader Program
-		this->Program = glCreateProgram();
-		glAttachShader(this->Program, vertex);
-		glAttachShader(this->Program, fragment);
-		glLinkProgram(this->Program);
-		// Print linking errors if any
-		glGetProgramiv(this->Program, GL_LINK_STATUS, &success);
-		if (!success)
-		{
-			glGetProgramInfoLog(this->Program, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-			exit(1);
-		}
-		// Delete the shaders as they're linked into our program now and no longer necessery
-		glDeleteShader(vertex);
-		glDeleteShader(fragment);
+	void initContextItem();
+	bool updateContextItem(bool changed) { return true; }
+	void cleanupContextItem();
 
-	}
-	// Uses the current shader
-	void Use()
-	{
-		glUseProgram(this->Program);
-	}
+private:
+	std::string loadFile(const std::string &fileName);
+	void compileShader(const GLuint &shader, const std::string& code);
+	bool checkShaderCompileStatus(GLuint obj);
+	bool checkProgramLinkStatus(GLuint obj);
+
+	bool _isInitialized;
+	MinVR::ContextSpecificPtr<GLuint> _shaderProgram;
+	std::string _vertexShader;
+	std::string _geometryShader;
+	std::string _fragmentShader;
 };
 
-#endif
+}
+
+
+#endif /* SHADER_H_ */

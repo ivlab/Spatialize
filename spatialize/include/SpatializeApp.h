@@ -14,13 +14,14 @@
 #include "MVRCore/AbstractCamera.H"
 #include "MVRCore/AbstractWindow.H"
 #include "MVRCore/Event.H"
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 #include <vector>
 #include <map>
 #include <cmath>
 #include "Scene.h"
 #include "MVRCore/Thread.h"
 #include "Mesh.h"
+#include "Shader.h"
 
 namespace Spatialize {
 
@@ -66,8 +67,9 @@ private:
     float _tempScale;
     GLchar* _path;
     double _syncTime;
+    ShaderRef _shader;
 
-    void loadModel(std::string path);
+    /*void loadModel(std::string path);
     void processNodeTextures(aiNode *node, const aiScene *scene);
     vector<Texture> processMeshTextures(aiMesh *mesh, const aiScene *scene);
     void processNode(aiNode *node, const aiScene *scene);
@@ -78,7 +80,7 @@ private:
     vector<aiMesh*> _aimeshes;
     vector<Texture> _textures_loaded;
     std::string directory;
-    glm::vec3 min, max;
+    glm::vec3 min, max;*/
 };
 
 }
