@@ -1,5 +1,6 @@
 
 #include <Mesh.h>
+#include <iostream>
 
 namespace Spatialize {
 
@@ -62,9 +63,9 @@ const Box& Mesh::getBoundingBox() {
 
 void Mesh::calculateBoundingBox() {
 	glm::vec3 min, max;
-	for (int f = 0; f < _vertices.size(); f++)
+	for (int f = 0; f < _indices.size(); f++)
 	{
-		const glm::vec3& vert = _vertices[f];
+		const glm::vec3& vert = _vertices[_indices[f]];
 
 		if (f == 0)
 		{
@@ -81,6 +82,13 @@ void Mesh::calculateBoundingBox() {
 			if (vert.z > max.z) { max.z = vert.z; }
 		}
 	}
+
+	std::cout << min.x << " ";
+	std::cout << min.y << " ";
+	std::cout << min.z << " / ";
+	std::cout << max.x << " ";
+	std::cout << max.y << " ";
+	std::cout << max.z << std::endl;
 
 	_boundingBox->setLow(min);
 	_boundingBox->setHigh(max);

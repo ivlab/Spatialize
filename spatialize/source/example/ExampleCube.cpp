@@ -25,7 +25,7 @@ namespace Spatialize {
 
 ExampleCube::ExampleCube() {
 
-	_boundingBox = Box(glm::vec3(-1.0f), glm::vec3(1.0f));
+	_boundingBox = Box(glm::vec3(-0.25f), glm::vec3(0.25f));
 }
 
 ExampleCube::~ExampleCube() {

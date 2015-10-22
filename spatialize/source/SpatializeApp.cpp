@@ -15,7 +15,12 @@
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 using namespace MinVR;
+using namespace std;
 
 namespace Spatialize {
 
@@ -28,17 +33,80 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_translation = glm::vec3(0.0f);
 	_startSize = 1.0f;
 	_tempScale = 1.0f;
-	_scale = 2.0f;
+	_scale = 1.0f;
+	_path = path;
+	//_scale = 1.0f;
 	/*_path = path;
     if (_path)
         this->loadModel(_path);*/
 
 	_shader = ShaderRef(new Shader("share/shaders/default.vs", "share/shaders/default.fs"));
 
-    _scene = SceneRef(new ExampleCube());
+	if (_path)
+	{
+		std::cout << "Not cube" << std::endl;
+		std::vector<glm::vec3> vertices;
+		vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
+		vertices.push_back(glm::vec3(-1.0f, 1.0, 0.0));
+		vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+
+		/*vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
+		vertices.push_back(glm::vec3(1.0f, -1.0, 0.0));
+		vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));*/
+
+		std::vector<unsigned int> indices;
+		for (int f = 0; f < vertices.size(); f++)
+		{
+			indices.push_back(f);
+		}
+
+		//_scene = SceneRef(new Mesh(vertices, indices));
+		_scene = SceneRef(loadModel(_path));
+	}
+	else
+	{
+		std::cout << "Example cube" << std::endl;
+	    _scene = SceneRef(new ExampleCube());
+	}
 }
 
 SpatializeApp::~SpatializeApp() {
+}
+
+MeshRef SpatializeApp::loadModel(std::string path)
+{
+	Assimp::Importer importer;
+	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
+		return NULL;
+	}
+
+	cout << scene->mNumMeshes << endl;
+
+    aiMesh *mesh = scene->mMeshes[0];
+
+    std::vector<glm::vec3> vertices;
+    for (int i = 0; i < mesh->mNumVertices; i++) {
+    	glm::vec3 vert;
+    	vert.x = mesh->mVertices[i].x;
+    	vert.y = mesh->mVertices[i].y;
+    	vert.z = mesh->mVertices[i].z;
+    	vertices.push_back(vert);
+    }
+
+    std::vector<unsigned int> indices;
+    for(int i = 0; i < mesh->mNumFaces; i++)
+    {
+    	aiFace face = mesh->mFaces[i];
+    	// Retrieve all indices of the face and store them in the indices vector
+    	for(int j = 0; j < face.mNumIndices; j++)
+    		indices.push_back(face.mIndices[j]);
+    }
+
+    return MeshRef(new Mesh(vertices, indices));
 }
 
 /*
@@ -318,13 +386,23 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	const Box& box = scene->getBoundingBox();
 	float size = glm::length((box.getHigh()-box.getLow()));
 
-	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(-box.center() + _translation + _tempTrans));
-	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
+	/*cout << box.center().x << " ";
+	cout << box.center().y <<  " ";
+	cout << box.center().z << endl;*/
 
-	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(scale);
+	//0.776126 -0.438658 0
+	//-4.44584 -3.63704 -1.70141 / 5.99809 2.75972 1.70141
+
+
+	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
+	//glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
+	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
+	trans = glm::translate(scale, glm::dvec3(-(box.center())));
+
+	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(trans);
  
 	_shader->useProgram();
-	_shader->setParameter("model", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedModelMatrix()));
+	_shader->setParameter("model", glm::mat4(trans));//glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getObjectToWorldMatrix()));
 	_shader->setParameter("view", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedViewMatrix()));
 	_shader->setParameter("projection", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedProjectionMatrix()));
 

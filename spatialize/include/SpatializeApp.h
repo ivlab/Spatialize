@@ -69,6 +69,8 @@ private:
     double _syncTime;
     ShaderRef _shader;
 
+    MeshRef loadModel(std::string path);
+
     /*void loadModel(std::string path);
     void processNodeTextures(aiNode *node, const aiScene *scene);
     vector<Texture> processMeshTextures(aiMesh *mesh, const aiScene *scene);
