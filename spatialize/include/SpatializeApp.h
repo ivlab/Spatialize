@@ -56,11 +56,13 @@ private:
     MinVR::Mutex _mutex;
     bool _touch0;
     bool _touch1;
+    bool _touch2;
     glm::vec2 _pos0;
     glm::vec2 _scale0;
     glm::vec2 _scale1;
     glm::vec3 _tempTrans;
     glm::vec3 _translation;
+    glm::vec2 _vertPos;
     float _scale;
     float _startSize;
     float _tempScale;

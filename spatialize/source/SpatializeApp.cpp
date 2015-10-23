@@ -29,6 +29,7 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_numFrames = 0;
 	_touch0 = false;
 	_touch1 = false;
+	_touch2 = false;
 	_tempTrans = glm::vec3(0.0f);
 	_translation = glm::vec3(0.0f);
 	_startSize = 1.0f;
@@ -271,6 +272,11 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 			_scale1 = events[i]->get2DData();
 			_startSize = glm::length((_scale1 - _scale0));
 		}
+		else if (MinVR::startsWith(name, "Touch_Cursor_Down2"))
+		{
+			_touch2 = true;
+			_vertPos = events[i]->get2DData();
+		}
 		else if (_touch0 && MinVR::startsWith(name, "Touch_Cursor_Move0"))
 		{
 			glm::dvec4 data = events[i]->get4DData();
@@ -291,6 +297,14 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 			_scale1 = glm::vec2(data.x, data.y);
 			_tempScale = glm::length((_scale1 - _scale0))/_startSize;
 		}
+		else if (_touch2 && _touch1  && _touch0 && MinVR::startsWith(name, "Touch_Cursor_Move2"))
+		{
+			glm::dvec4 data = events[i]->get4DData();
+			glm::vec2 newVertPos = glm::vec2(data.x, data.y);
+			float diff = glm::length(newVertPos-_pos0) - glm::length(_vertPos-_pos0);
+			_translation += glm::vec3(0.0f, diff, 0.0f);
+			_vertPos = newVertPos;
+		}
 		else if (MinVR::startsWith(name, "Touch_Cursor_Up0"))
 		{
 			_touch0 = false;
@@ -303,6 +317,10 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 			_touch1 = false;
 			_scale1 = _scale0;
 			_tempScale = 1.0f;
+		}
+		else if (MinVR::startsWith(name, "Touch_Cursor_Up2"))
+		{
+			_touch2 = false;
 		}
 	}
 
