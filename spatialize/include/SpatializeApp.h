@@ -63,6 +63,7 @@ private:
     glm::vec3 _tempTrans;
     glm::vec3 _translation;
     glm::vec2 _vertPos;
+    double _rotationAngle;
     float _scale;
     float _startSize;
     float _tempScale;

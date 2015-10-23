@@ -6,6 +6,8 @@
  * 		Dan Orban (dtorban)
  */
 
+#define GLM_FORCE_RADIANS
+
 #include <SpatializeApp.h>
 #include "example/ExampleCube.h"
 #include "MVRCore/StringUtils.H"
@@ -36,6 +38,7 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 	_tempScale = 1.0f;
 	_scale = 1.0f;
 	_path = path;
+	_rotationAngle = 0.0f;
 	//_scale = 1.0f;
 	/*_path = path;
     if (_path)
@@ -280,6 +283,7 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 		else if (_touch0 && MinVR::startsWith(name, "Touch_Cursor_Move0"))
 		{
 			glm::dvec4 data = events[i]->get4DData();
+			glm::vec2 oldScale0 = _scale0;
 			_scale0 = glm::vec2(data.x, data.y);
 			if (!_touch1)
 			{
@@ -289,13 +293,25 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 			else
 			{
 				_tempScale = glm::length((_scale1 - _scale0))/_startSize;
+				glm::vec2 oldVal = glm::normalize(_scale1-oldScale0);
+				glm::vec2 newVal = glm::normalize(_scale1-_scale0);
+				double diffAngle = acos(glm::min(1.0f, glm::dot(oldVal, newVal)));
+				float cVal = glm::cross(glm::vec3(oldVal,0.0), glm::vec3(newVal,0.0)).z;
+				_rotationAngle += cVal > 0 ? -diffAngle : diffAngle;
 			}
 		}
 		else if (_touch1 && _touch0 && MinVR::startsWith(name, "Touch_Cursor_Move1"))
 		{
 			glm::dvec4 data = events[i]->get4DData();
+			glm::vec2 oldScale1 = _scale1;
 			_scale1 = glm::vec2(data.x, data.y);
 			_tempScale = glm::length((_scale1 - _scale0))/_startSize;
+			//_rotationAngle += 0.1;
+			glm::vec2 oldVal = glm::normalize(oldScale1-_scale0);
+			glm::vec2 newVal = glm::normalize(_scale1-_scale0);
+			double diffAngle = acos(glm::min(1.0f, glm::dot(oldVal, newVal)));
+			float cVal = glm::cross(glm::vec3(oldVal,0.0), glm::vec3(newVal,0.0)).z;
+			_rotationAngle += cVal > 0 ? -diffAngle : diffAngle;
 		}
 		else if (_touch2 && _touch1  && _touch0 && MinVR::startsWith(name, "Touch_Cursor_Move2"))
 		{
@@ -408,7 +424,8 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
 	//glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
 	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
-	trans = glm::translate(scale, glm::dvec3(-(box.center())));
+	glm::dmat4 rot = glm::rotate(scale, _rotationAngle, glm::dvec3(0.0, 1.0, 0.0));
+	trans = glm::translate(rot, glm::dvec3(-(box.center())));
 
 	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(trans);
 
