@@ -24,6 +24,8 @@ public:
 	void setParameter(const std::string& name, glm::vec3 vector);
 	void setParameter(const std::string& name, GLuint id);
 	void setParameter(const std::string& name, float* values, int numValues);
+	void setParameter(const std::string& name, glm::vec3* values, int numValues);
+	void setParameter(const std::string& name, glm::vec4* values, int numValues);
 
 	void initContextItem();
 	bool updateContextItem(bool changed) { return true; }

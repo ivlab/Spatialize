@@ -141,6 +141,16 @@ void Shader::setParameter(const std::string& name, float* values, int numValues)
 	glUniform1fv(loc, numValues, values);
 }
 
+void Shader::setParameter(const std::string& name, glm::vec4* values, int numValues) {
+	GLint loc = glGetUniformLocation(*_shaderProgram, name.c_str());
+	glUniform4fv(loc, numValues, (float*)&values[0]);
+}
+
+void Shader::setParameter(const std::string& name, glm::vec3* values, int numValues) {
+	GLint loc = glGetUniformLocation(*_shaderProgram, name.c_str());
+	glUniform3fv(loc, numValues, (float*)&values[0]);
+}
+
 // helper to check and display for shader linker error
 bool Shader::checkProgramLinkStatus(GLuint obj) {
 	GLint status;

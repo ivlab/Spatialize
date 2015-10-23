@@ -89,12 +89,23 @@ MeshRef SpatializeApp::loadModel(std::string path)
     aiMesh *mesh = scene->mMeshes[0];
 
     std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
+
     for (int i = 0; i < mesh->mNumVertices; i++) {
     	glm::vec3 vert;
     	vert.x = mesh->mVertices[i].x;
     	vert.y = mesh->mVertices[i].y;
     	vert.z = mesh->mVertices[i].z;
     	vertices.push_back(vert);
+
+        if (mesh->HasNormals())
+        {
+        	glm::vec3 norm;
+        	norm.x = mesh->mNormals[i].x;
+        	norm.y = mesh->mNormals[i].y;
+        	norm.z = mesh->mNormals[i].z;
+        	normals.push_back(norm);
+        }
     }
 
     std::vector<unsigned int> indices;
@@ -104,6 +115,11 @@ MeshRef SpatializeApp::loadModel(std::string path)
     	// Retrieve all indices of the face and store them in the indices vector
     	for(int j = 0; j < face.mNumIndices; j++)
     		indices.push_back(face.mIndices[j]);
+    }
+
+    if (mesh->HasNormals())
+    {
+        return MeshRef(new Mesh(vertices, normals, indices));
     }
 
     return MeshRef(new Mesh(vertices, indices));
@@ -310,7 +326,6 @@ void SpatializeApp::initializeContextSpecificVars(int threadId,
 		MinVR::WindowRef window) {
 	initGL();
 	initVBO(threadId);
-	initLights();
 
 	glClearColor(0.f, 0.f, 0.f, 0.f);
 
@@ -355,28 +370,6 @@ void SpatializeApp::initGL()
 	}
 }
 
-void SpatializeApp::initLights()
-{
-	// set up light colors (ambient, diffuse, specular)
-    GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
-    GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
-    GLfloat lightKs[] = {1, 1, 1, 1};           // specular light
-    glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
-
-    // position the light
-    float lightPos[4] = {0.5, 0, 3, 1}; // positional light
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-
-    glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
-
-	GLenum err;
-	if((err = glGetError()) != GL_NO_ERROR) {
-		std::cout << "GLERROR initLights: "<<err<<std::endl;
-	}
-}
-
 void SpatializeApp::postInitialization() {
 }
 
@@ -400,11 +393,25 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	trans = glm::translate(scale, glm::dvec3(-(box.center())));
 
 	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(trans);
- 
+
+	glm::vec4 lightPositions[1];
+	lightPositions[0] = glm::vec4(0.5, 0, 3, 1);
+
+	glm::vec4 lightK[1];
+	lightK[0] = glm::vec4(0.2, 0.7, 0.5, 50);
+
+//    GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
+//    GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
+//    GLfloat lightKs[] = {1, 1, 1, 1};           // specular light
+
 	_shader->useProgram();
 	_shader->setParameter("model", glm::mat4(trans));//glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getObjectToWorldMatrix()));
 	_shader->setParameter("view", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedViewMatrix()));
 	_shader->setParameter("projection", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedProjectionMatrix()));
+	_shader->setParameter("viewdir", glm::vec3(renderDevice.getWindowInfo().getOffAxisCamera()->getLookVector()));
+	_shader->setParameter("lightPositions", lightPositions, 1);
+	_shader->setParameter("lightK", lightK, 1);
+	_shader->setParameter("lightCount", (GLuint)1);
 
 	scene->draw(renderDevice);
 

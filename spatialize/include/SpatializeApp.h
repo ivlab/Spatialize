@@ -47,7 +47,6 @@ public:
 private:
 	void initGL();
 	void initVBO(int threadId);
-	void initLights();
 
 	//std::map<int, SceneRef> _scene;
 	SceneRef _scene;
