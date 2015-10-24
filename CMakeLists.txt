@@ -174,17 +174,16 @@ if (BUILD_DEPENDENCIES)
 
    set_property(TARGET assimp PROPERTY FOLDER "Dependencies")
 
+   set(soil_PATCH ${CMAKE_COMMAND} -E copy ${soil_PREFIX}/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt)
+   set(soil_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${soil_INSTALL_DIR}")
+
    ExternalProject_add(SOIL
-		DEPENDS assimp		
 		PREFIX ${soil_PREFIX}
 		URL http://www.lonesock.net/files/soil.zip
-		CONFIGURE_COMMAND "" #mkdir -p ${soil_PREFIX}/src/SOIL/projects/makefile/obj
-		BINARY_DIR "${CMAKE_SOURCE_DIR}/dependencies/SOIL_makefile"		
-		BUILD_COMMAND make
 		INSTALL_DIR ${soil_INSTALL_DIR}
-		INSTALL_COMMAND make install
+		CMAKE_ARGS ${soil_CMAKE_ARGS}
+		PATCH_COMMAND ${soil_PATCH}
 		UPDATE_COMMAND ""
-		PATCH_COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/dependencies/SOIL/obj
    )
 
    set_property(TARGET SOIL PROPERTY FOLDER "Dependencies")

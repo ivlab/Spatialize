@@ -357,6 +357,9 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 		{
 			_touch2 = false;
 		}
+		else if (name == "kbd_C_CTRL_down") {
+			terminate();
+		}
 	}
 
 	_time = synchronizedTime;//glfwGetTime();
