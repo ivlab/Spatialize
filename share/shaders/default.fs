@@ -18,10 +18,8 @@ void main()
 	color = vec4(1.0,0.0,0.0,1.0);
 	if (hasTexCoords)
 	{
-		color = vec4(texCoord,0.0,1.0);
-	} 
-	
-    //color = vec4(texture(tex, texCoord));
+		color = vec4(texture(tex, texCoord));
+	}
     
     vec3 I = vec3(0.0);
     
@@ -40,5 +38,5 @@ void main()
     I.y = min(1.0, I.y);
     I.z = min(1.0, I.z);
     
-    color = vec4(I,1.0);
+    color = vec4(I,color.a);
 }

@@ -31,17 +31,21 @@ set (SOURCEFILES
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp
 		spatialize/source/example/ExampleCube.cpp
+		spatialize/source/texture/SOILTexture.cpp
 		spatialize/source/Box.cpp
 		spatialize/source/Mesh.cpp
 		spatialize/source/Shader.cpp
+		spatialize/source/Texture.cpp
 		spatialize/source/VRModel.cpp)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h
 		spatialize/include/Scene.h
 		spatialize/include/example/ExampleCube.h
+		spatialize/include/texture/SOILTexture.h
 		spatialize/include/Box.h
 		spatialize/include/Shader.h
 		spatialize/include/Mesh.h
+		spatialize/include/Texture.h
 		spatialize/include/VRModel.h)
 source_group("Header Files" FILES ${HEADERFILES})
 

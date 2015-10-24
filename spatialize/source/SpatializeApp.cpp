@@ -16,6 +16,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "texture/SOILTexture.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -27,6 +28,8 @@ using namespace std;
 namespace Spatialize {
 
 SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
+	_texture = TextureRef(new SOILTexture("img_test.png"));
+
 	_startTime = -1;
 	_numFrames = 0;
 	_touch0 = false;
@@ -396,6 +399,7 @@ void SpatializeApp::initVBO(int threadId)
     _mutex.lock();
     _shader->initContext();
 	_scene->initContext();
+	_texture->initContext();
     _mutex.unlock();
 }
 
@@ -470,6 +474,10 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	_shader->setParameter("lightK", lightK, 1);
 	_shader->setParameter("lightCount", (GLuint)1);
 	_shader->setParameter("hasTexCoords", (GLuint)0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _texture->getId());
+	_shader->setParameter("tex", 0);
 
 	scene->draw(renderDevice);
 

@@ -22,6 +22,7 @@
 #include "MVRCore/Thread.h"
 #include "Mesh.h"
 #include "Shader.h"
+#include "Texture.h"
 
 namespace Spatialize {
 
@@ -70,6 +71,7 @@ private:
     GLchar* _path;
     double _syncTime;
     ShaderRef _shader;
+    TextureRef _texture;
 
     MeshRef loadModel(std::string path);
 
