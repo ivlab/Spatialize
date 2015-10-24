@@ -94,6 +94,9 @@ MeshRef SpatializeApp::loadModel(std::string path)
 
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> texCoords;
+
+    bool hasTexCoords = mesh->mTextureCoords[0];
 
     for (int i = 0; i < mesh->mNumVertices; i++) {
     	glm::vec3 vert;
@@ -110,6 +113,11 @@ MeshRef SpatializeApp::loadModel(std::string path)
         	norm.z = mesh->mNormals[i].z;
         	normals.push_back(norm);
         }
+
+        if (hasTexCoords)
+        {
+        	texCoords.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+        }
     }
 
     std::vector<unsigned int> indices;
@@ -121,12 +129,23 @@ MeshRef SpatializeApp::loadModel(std::string path)
     		indices.push_back(face.mIndices[j]);
     }
 
+    MeshRef finalMesh;
+
     if (mesh->HasNormals())
     {
-        return MeshRef(new Mesh(vertices, normals, indices));
+        finalMesh = MeshRef(new Mesh(vertices, normals, indices));
+    }
+    else
+    {
+        finalMesh = MeshRef(new Mesh(vertices, indices));
     }
 
-    return MeshRef(new Mesh(vertices, indices));
+    if (hasTexCoords)
+    {
+    	finalMesh->setTexCoords(texCoords);
+    }
+
+    return finalMesh;
 }
 
 /*
@@ -447,6 +466,7 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	_shader->setParameter("lightPositions", lightPositions, 1);
 	_shader->setParameter("lightK", lightK, 1);
 	_shader->setParameter("lightCount", (GLuint)1);
+	_shader->setParameter("hasTexCoords", (GLuint)0);
 
 	scene->draw(renderDevice);
 

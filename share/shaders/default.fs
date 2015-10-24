@@ -11,10 +11,16 @@ uniform vec4 lightPositions[10];
 uniform vec4 lightK[10];
 uniform int lightCount;
 uniform vec3 viewdir;
+uniform bool hasTexCoords;
 
 void main()
-{    
+{   
 	color = vec4(1.0,0.0,0.0,1.0);
+	if (hasTexCoords)
+	{
+		color = vec4(texCoord,0.0,1.0);
+	} 
+	
     //color = vec4(texture(tex, texCoord));
     
     vec3 I = vec3(0.0);

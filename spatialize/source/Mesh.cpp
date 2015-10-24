@@ -57,6 +57,15 @@ void Mesh::setNormals(const std::vector<glm::vec3>& normals)
 	incrementVersion();
 }
 
+const std::vector<glm::vec2>& Mesh::getTexCoords() const {
+	return _texCoords;
+}
+
+void Mesh::setTexCoords(const std::vector<glm::vec2>& texCoords) {
+	_texCoords = texCoords;
+	incrementVersion();
+}
+
 const Box& Mesh::getBoundingBox() {
 	return *_boundingBox;
 }
@@ -131,8 +140,10 @@ void Mesh::calculateNormals() {
 void Mesh::createVBO() {
 	const std::vector<glm::vec3>& vertices = _vertices;
 	const std::vector<glm::vec3>& normals = _normals;
+	const std::vector<glm::vec2>& texCoords = _texCoords;
 	const std::vector<unsigned int>& indices = _indices;
 	int numNormals = normals.size();
+	int numTexCoords = texCoords.size();
 
 	_vao.reset(new GLuint(0));
 	_vbo.reset(new GLuint(0));
@@ -146,7 +157,7 @@ void Mesh::createVBO() {
 	int numIndices = indices.size();
 
 	glBindBuffer(GL_ARRAY_BUFFER, *_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3 + sizeof(GLfloat)*numNormals*3, 0, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3 + sizeof(GLfloat)*numNormals*3 + sizeof(GLfloat)*numTexCoords*2, 0, GL_DYNAMIC_DRAW);
 
 	glBindVertexArray(*_vao);
 	int loc = 0;
@@ -157,15 +168,18 @@ void Mesh::createVBO() {
 
 	glm::vec3* verts = new glm::vec3[numVertices];
 	glm::vec3* norms = new glm::vec3[numNormals];
+	glm::vec2* coords = new glm::vec2[numTexCoords];
 	unsigned int* ind = new unsigned int[numIndices];
 
 	std::copy(vertices.begin(), vertices.end(), verts);
 	std::copy(normals.begin(), normals.end(), norms);
+	std::copy(texCoords.begin(), texCoords.end(), coords);
 	std::copy(indices.begin(), indices.end(), ind);
 
 	glBindBuffer(GL_ARRAY_BUFFER, *_vbo);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*numVertices*3, verts);
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3, sizeof(GLfloat)*numNormals*3, norms);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat)*numVertices*3 + sizeof(GLfloat)*numNormals*3, sizeof(GLfloat)*numTexCoords*2, coords);
 
 	// create indexes
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *_indexVbo);
@@ -173,6 +187,7 @@ void Mesh::createVBO() {
 
 	delete[] verts;
 	delete[] norms;
+	delete[] coords;
 	delete[] ind;
 }
 
@@ -182,6 +197,8 @@ void Mesh::generateVaoAttributes(int& location) {
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
 	glEnableVertexAttribArray(++location);
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (char*)0 + sizeof(GLfloat)*_vertices.size()*3);
+	glEnableVertexAttribArray(++location);
+	glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), (char*)0 + sizeof(GLfloat)*_vertices.size()*3*2);
 }
 
 int Mesh::bindIndices() {
@@ -199,7 +216,21 @@ void Mesh::draw(MinVR::RenderDevice& renderDevice) {
 	glBindVertexArray(*_vao);
 	int numIndices = bindIndices();
 
+	GLint shaderId;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &shaderId);
+	if (shaderId)
+	{
+		GLint loc = glGetUniformLocation(shaderId, "hasTexCoords");
+		glUniform1i(loc, (GLint)(_texCoords.size() > 0));
+	}
+
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+
+	if (shaderId)
+	{
+		GLint loc = glGetUniformLocation(shaderId, "hasTexCoords");
+		glUniform1i(loc, 0);
+	}
 	glBindVertexArray(0);
 }
 

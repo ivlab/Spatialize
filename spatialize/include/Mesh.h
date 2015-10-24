@@ -24,6 +24,8 @@ public:
 	void setVertices(const std::vector<glm::vec3>& vertices);
 	const std::vector<glm::vec3>& getNormals() const;
 	void setNormals(const std::vector<glm::vec3>& normals);
+	const std::vector<glm::vec2>& getTexCoords() const;
+	void setTexCoords(const std::vector<glm::vec2>& texCoords);
 
 private:
 	void calculateBoundingBox();
@@ -34,6 +36,7 @@ private:
 	bool _hasNormals;
 	std::vector<glm::vec3> _vertices;
 	std::vector<glm::vec3> _normals;
+	std::vector<glm::vec2> _texCoords;
 	std::vector<unsigned int> _indices;
 
 // Graphics code
