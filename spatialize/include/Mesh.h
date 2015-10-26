@@ -6,6 +6,7 @@
 #include <vector>
 #include "Scene.h"
 #include "GL/glew.h"
+#include "Texture.h"
 
 namespace Spatialize {
 
@@ -26,6 +27,8 @@ public:
 	void setNormals(const std::vector<glm::vec3>& normals);
 	const std::vector<glm::vec2>& getTexCoords() const;
 	void setTexCoords(const std::vector<glm::vec2>& texCoords);
+	TextureRef getTexture() const;
+	void setTexture(TextureRef texture);
 
 private:
 	void calculateBoundingBox();
@@ -38,6 +41,7 @@ private:
 	std::vector<glm::vec3> _normals;
 	std::vector<glm::vec2> _texCoords;
 	std::vector<unsigned int> _indices;
+	TextureRef _texture;
 
 // Graphics code
 public:

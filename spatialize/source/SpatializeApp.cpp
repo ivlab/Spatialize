@@ -144,8 +144,6 @@ MeshRef SpatializeApp::loadModel(std::string path)
     	directory = path.substr(0, lastFolderIndex+1);
     }
 
-    std::cout << "Folder: " + directory;
-
     MeshRef finalMesh;
 
     if (mesh->HasNormals())
@@ -170,9 +168,8 @@ MeshRef SpatializeApp::loadModel(std::string path)
     	{
     		aiString str;
     		material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
-    		std::string p = directory + std::string(str.C_Str());
-    		cout << p << endl;
-    	    _texture = TextureRef(new SOILTexture(directory + std::string(str.C_Str())));
+    		finalMesh->setTexture(TextureRef(new SOILTexture(directory + std::string(str.C_Str()))));
+    	    //_texture = TextureRef(new SOILTexture(directory + std::string(str.C_Str())));
     	}
     }
 
@@ -502,10 +499,10 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	_shader->setParameter("lightK", lightK, 1);
 	_shader->setParameter("lightCount", (GLuint)1);
 	_shader->setParameter("hasTexCoords", (GLuint)0);
+	_shader->setParameter("tex", 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _texture->getId());
-	_shader->setParameter("tex", 0);
 
 	scene->draw(renderDevice);
 

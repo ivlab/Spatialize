@@ -72,6 +72,7 @@ private:
     double _syncTime;
     ShaderRef _shader;
     TextureRef _texture;
+//    std::map<std::string, TextureRef> _textureMap;
 
     MeshRef loadModel(std::string path);
 

@@ -5,12 +5,12 @@
 namespace Spatialize {
 
 Mesh::Mesh(const std::vector<glm::vec3>& vertices,
-		const std::vector<unsigned int>& indices) : _vertices(vertices), _indices(indices), _boundingBox(0), _hasNormals(false) {
+		const std::vector<unsigned int>& indices) : _vertices(vertices), _indices(indices), _boundingBox(0), _hasNormals(false), _texture(NULL) {
 	init();
 }
 
 Mesh::Mesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::vec3> &normals,
-		const std::vector<unsigned int>& indices) : _vertices(vertices), _normals(normals), _indices(indices), _boundingBox(0), _hasNormals(true) {
+		const std::vector<unsigned int>& indices) : _vertices(vertices), _normals(normals), _indices(indices), _boundingBox(0), _hasNormals(true), _texture(NULL) {
 	init();
 }
 
@@ -206,6 +206,15 @@ int Mesh::bindIndices() {
 	return _indices.size();
 }
 
+TextureRef Mesh::getTexture() const {
+	return _texture;
+}
+
+void Mesh::setTexture(TextureRef texture) {
+	_texture = texture;
+	incrementVersion();
+}
+
 void Mesh::deleteVBO() {
 	glDeleteVertexArrays(1, _vao.get());
 	glDeleteBuffers(1, _vbo.get());
@@ -224,6 +233,12 @@ void Mesh::draw(MinVR::RenderDevice& renderDevice) {
 		glUniform1i(loc, (GLint)(_texCoords.size() > 0));
 	}
 
+	if (_texture != NULL)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, _texture->getId());
+	}
+
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 
 	if (shaderId)
@@ -235,10 +250,16 @@ void Mesh::draw(MinVR::RenderDevice& renderDevice) {
 }
 
 void Mesh::initContextItem() {
+	if (_texture != NULL)
+		_texture->initContext();
+
 	createVBO();
 }
 
 bool Mesh::updateContextItem(bool changed) {
+	if (_texture != NULL)
+		_texture->updateContext();
+
 	if (changed)
 	{
 		deleteVBO();
