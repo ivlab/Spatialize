@@ -36,8 +36,7 @@ set (SOURCEFILES
 		spatialize/source/Box.cpp
 		spatialize/source/Mesh.cpp
 		spatialize/source/Shader.cpp
-		spatialize/source/Texture.cpp
-		spatialize/source/VRModel.cpp)
+		spatialize/source/Texture.cpp)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h
 		spatialize/include/Scene.h
@@ -47,8 +46,7 @@ set (HEADERFILES
 		spatialize/include/Box.h
 		spatialize/include/Shader.h
 		spatialize/include/Mesh.h
-		spatialize/include/Texture.h
-		spatialize/include/VRModel.h)
+		spatialize/include/Texture.h)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################

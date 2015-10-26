@@ -16,14 +16,8 @@ SOILTexture::SOILTexture(const std::string& filepath) : Texture() {
 
 	int width, height;
 	unsigned char* image = SOIL_load_image(filepath.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
-	if (image == NULL)
+	if (image != NULL)
 	{
-		std::cout << "Not valid file." << std::endl;
-	}
-	else
-	{
-		std::cout << "Valid file." << std::endl;
-
 		create(width, height, 1);
 
 		for (int f = 0; f < width*height*4; f++)

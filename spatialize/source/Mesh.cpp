@@ -133,10 +133,6 @@ void Mesh::calculateNormals() {
 
 // Graphics code
 
-//GL_CONTEXT_ITEM_INIT GLuint Mesh::_vao = 0;
-//GL_CONTEXT_ITEM_INIT GLuint Mesh::_vbo = 0;
-//GL_CONTEXT_ITEM_INIT GLuint Mesh::_indexVbo = 0;
-
 void Mesh::createVBO() {
 	const std::vector<glm::vec3>& vertices = _vertices;
 	const std::vector<glm::vec3>& normals = _normals;

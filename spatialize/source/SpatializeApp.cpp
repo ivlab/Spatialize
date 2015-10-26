@@ -11,7 +11,6 @@
 #include <SpatializeApp.h>
 #include "example/ExampleCube.h"
 #include "MVRCore/StringUtils.H"
-#include "VRModel.h"
 #include <unistd.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
@@ -42,31 +41,11 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp(), _sc
 	_scale = 1.0f;
 	_path = path;
 	_rotationAngle = 0.0f;
-	//_scale = 1.0f;
-	/*_path = path;
-    if (_path)
-        this->loadModel(_path);*/
 
 	_shader = ShaderRef(new Shader("share/shaders/default.vs", "share/shaders/default.fs"));
 
 	if (_path)
 	{
-		std::cout << "Not cube" << std::endl;
-		std::vector<glm::vec3> vertices;
-		vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));
-		vertices.push_back(glm::vec3(-1.0f, 1.0, 0.0));
-		vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
-
-		/*vertices.push_back(glm::vec3(1.0f, 1.0, 0.0));
-		vertices.push_back(glm::vec3(1.0f, -1.0, 0.0));
-		vertices.push_back(glm::vec3(-1.0f, -1.0, 0.0));*/
-
-		std::vector<unsigned int> indices;
-		for (int f = 0; f < vertices.size(); f++)
-		{
-			indices.push_back(f);
-		}
-
 		std::vector<MeshRef> meshes = loadModel(_path);
 
 		for (int f = 0; f < meshes.size(); f++)
@@ -76,7 +55,6 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp(), _sc
 	}
 	else
 	{
-		std::cout << "Example cube" << std::endl;
 	    _scene->addScene(SceneRef(new ExampleCube()));
 	}
 }
@@ -180,7 +158,6 @@ std::vector<MeshRef> SpatializeApp::loadModel(std::string path)
 	    		material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
 	    		cout << std::string(str.C_Str()) << endl;
 	    		finalMesh->setTexture(TextureRef(new SOILTexture(directory + std::string(str.C_Str()))));
-	    	    //_texture = TextureRef(new SOILTexture(directory + std::string(str.C_Str())));
 	    	}
 	    }
 
@@ -189,131 +166,6 @@ std::vector<MeshRef> SpatializeApp::loadModel(std::string path)
 
     return meshes;
 }
-
-/*
-void SpatializeApp::loadModel(std::string path) {
-    Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
-    if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
-    {
-        cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
-        return;
-    }
-    this->directory = path.substr(0, path.find_last_of('/'));
-
-    this->processNode(scene->mRootNode, scene);
-}
-
-void SpatializeApp::processNode(aiNode *node, const aiScene *scene) {
-    for (GLuint i = 0; i < node->mNumMeshes; i++) {
-        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        this->_meshes.push_back(this->processMesh(mesh, scene));
-    }
-
-    for (GLuint i = 0; i < node->mNumChildren; i++) {
-        this->processNode(node->mChildren[i], scene);
-    }
-}
-
-Mesh SpatializeApp::processMesh(aiMesh *mesh, const aiScene *scene) {
-    vector<Vertex> vertices;
-    vector<GLuint> indices;
-    vector<Texture> textures;
-
-    for (GLuint i = 0; i < mesh->mNumVertices; i++) {
-        Vertex vertex;
-
-        glm::vec3 vect;
-        vect.x = mesh->mVertices[i].x;
-        vect.y = mesh->mVertices[i].y;
-        vect.z = mesh->mVertices[i].z;
-        vertex.Position = vect;
-
-        if (!min.x && !min.y && !min.z && !max.x && !max.y && !max.z)
-        {
-            min = vect;
-            max = vect;
-        }
-        else
-        {
-            if (vect.x < min.x) { min.x = vect.x; }
-            if (vect.y < min.y) { min.y = vect.y; }
-            if (vect.z < min.z) { min.z = vect.z; }
-            if (vect.x > max.x) { max.x = vect.x; }
-            if (vect.y > max.y) { max.y = vect.y; }
-            if (vect.z > max.z) { max.z = vect.z; }
-        }
-
-        vect.x = mesh->mNormals[i].x;
-        vect.y = mesh->mNormals[i].y;
-        vect.z = mesh->mNormals[i].z;
-
-        vertex.Normal = vect;
-
-        if(mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
-        {
-            glm::vec2 vec;
-            vec.x = mesh->mTextureCoords[0][i].x; 
-            vec.y = mesh->mTextureCoords[0][i].y;
-            vertex.TexCoords = vec;
-        }
-        else
-            vertex.TexCoords = glm::vec2(0.0f, 0.0f);  
-
-        vertices.push_back(vertex);
-    }
-
-    for(GLuint i = 0; i < mesh->mNumFaces; i++)
-    {
-        aiFace face = mesh->mFaces[i];
-        // Retrieve all indices of the face and store them in the indices vector
-        for(GLuint j = 0; j < face.mNumIndices; j++)
-            indices.push_back(face.mIndices[j]);
-    }
-
-    if (mesh->mMaterialIndex >= 0) {
-        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-
-        vector<Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-        vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    }
-
-    return Mesh(vertices, indices, textures);
-}
-
-vector<Texture> SpatializeApp::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
-{
-    vector<Texture> textures;
-    for(GLuint i = 0; i < mat->GetTextureCount(type); i++)
-    {
-        aiString str;
-        mat->GetTexture(type, i, &str);
-        // Check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
-        GLboolean skip = false;
-        for(GLuint j = 0; j < _textures_loaded.size(); j++)
-        {
-            if(_textures_loaded[j].path == str)
-            {
-                textures.push_back(_textures_loaded[j]);
-                skip = true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
-                break;
-            }
-        }
-        if(!skip)
-        {   // If texture hasn't been loaded already, load it
-            Texture texture;
-            texture.type = typeName;
-            texture.path = str;
-            textures.push_back(texture);
-            this->_textures_loaded.push_back(texture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
-        }
-    }
-    return textures;
-}*/
 
 void SpatializeApp::doUserInputAndPreDrawComputation(
 		const std::vector<MinVR::EventRef>& events, double synchronizedTime) {
@@ -404,7 +256,7 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 		}
 	}
 
-	_time = synchronizedTime;//glfwGetTime();
+	_time = synchronizedTime;
 
 	if (_startTime < 0)
 	{
@@ -478,16 +330,8 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	const Box& box = scene->getBoundingBox();
 	float size = glm::length((box.getHigh()-box.getLow()));
 
-	/*cout << box.center().x << " ";
-	cout << box.center().y <<  " ";
-	cout << box.center().z << endl;*/
-
-	//0.776126 -0.438658 0
-	//-4.44584 -3.63704 -1.70141 / 5.99809 2.75972 1.70141
-
 
 	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
-	//glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
 	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
 	glm::dmat4 rot = glm::rotate(scale, _rotationAngle, glm::dvec3(0.0, 1.0, 0.0));
 	trans = glm::translate(rot, glm::dvec3(-(box.center())));
@@ -499,10 +343,6 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 
 	glm::vec4 lightK[1];
 	lightK[0] = glm::vec4(0.2, 0.7, 0.3, 20);
-
-//    GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
-//    GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
-//    GLfloat lightKs[] = {1, 1, 1, 1};           // specular light
 
 	_shader->useProgram();
 	_shader->setParameter("model", glm::mat4(trans));//glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getObjectToWorldMatrix()));
