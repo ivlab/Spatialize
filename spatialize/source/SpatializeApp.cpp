@@ -132,6 +132,20 @@ MeshRef SpatializeApp::loadModel(std::string path)
     		indices.push_back(face.mIndices[j]);
     }
 
+    std::string directory = "";
+    int lastFolderIndex = path.find_last_of('/');
+    if (lastFolderIndex < 0)
+    {
+    	lastFolderIndex = path.find_last_of('\\');
+    }
+
+    if (lastFolderIndex >= 0)
+    {
+    	directory = path.substr(0, lastFolderIndex+1);
+    }
+
+    std::cout << "Folder: " + directory;
+
     MeshRef finalMesh;
 
     if (mesh->HasNormals())
@@ -146,6 +160,20 @@ MeshRef SpatializeApp::loadModel(std::string path)
     if (hasTexCoords)
     {
     	finalMesh->setTexCoords(texCoords);
+    }
+
+    if (mesh->mMaterialIndex >= 0)
+    {
+    	aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+    	int texCount = material->GetTextureCount(aiTextureType_DIFFUSE);
+    	if (texCount > 0)
+    	{
+    		aiString str;
+    		material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
+    		std::string p = directory + std::string(str.C_Str());
+    		cout << p << endl;
+    	    _texture = TextureRef(new SOILTexture(directory + std::string(str.C_Str())));
+    	}
     }
 
     return finalMesh;
