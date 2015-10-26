@@ -31,6 +31,7 @@ set (SOURCEFILES
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp
 		spatialize/source/example/ExampleCube.cpp
+		spatialize/source/scene/CompositeScene.cpp
 		spatialize/source/texture/SOILTexture.cpp
 		spatialize/source/Box.cpp
 		spatialize/source/Mesh.cpp
@@ -41,6 +42,7 @@ set (HEADERFILES
 		spatialize/include/SpatializeApp.h
 		spatialize/include/Scene.h
 		spatialize/include/example/ExampleCube.h
+		spatialize/include/scene/CompositeScene.h
 		spatialize/include/texture/SOILTexture.h
 		spatialize/include/Box.h
 		spatialize/include/Shader.h

@@ -15,7 +15,7 @@ uniform bool hasTexCoords;
 
 void main()
 {   
-	color = vec4(1.0,0.0,0.0,1.0);
+	color = vec4(0.7,0.7,0.7,1.0);
 	if (hasTexCoords)
 	{
 		color = vec4(texture(tex, texCoord));
@@ -31,7 +31,7 @@ void main()
     	float kd = lightK[i].y;
     	float ks = lightK[i].z;
     	float n = lightK[i].w;
-    	I += ka*color.xyz + kd*color.xyz*max(0,dot(L,N)) + ks*vec3(1.0)*pow(max(0,dot(H,N)),n);
+    	I += ka*color.xyz + kd*color.xyz*max(0,dot(L,N)) + ks*vec3(1.0)*pow(min(1.0,max(0,dot(H,N))),n);
     }
     
     I.x = min(1.0, I.x);

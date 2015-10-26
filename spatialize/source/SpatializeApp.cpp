@@ -27,7 +27,7 @@ using namespace std;
 
 namespace Spatialize {
 
-SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
+SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp(), _scene(new CompositeScene()) {
 	_texture = TextureRef(new SOILTexture("img_test.png"));
 
 	_startTime = -1;
@@ -67,113 +67,127 @@ SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp() {
 			indices.push_back(f);
 		}
 
-		//_scene = SceneRef(new Mesh(vertices, indices));
-		_scene = SceneRef(loadModel(_path));
+		std::vector<MeshRef> meshes = loadModel(_path);
+
+		for (int f = 0; f < meshes.size(); f++)
+		{
+			_scene->addScene(meshes[f]);
+		}
 	}
 	else
 	{
 		std::cout << "Example cube" << std::endl;
-	    _scene = SceneRef(new ExampleCube());
+	    _scene->addScene(SceneRef(new ExampleCube()));
 	}
 }
 
 SpatializeApp::~SpatializeApp() {
 }
 
-MeshRef SpatializeApp::loadModel(std::string path)
+std::vector<MeshRef> SpatializeApp::loadModel(std::string path)
 {
+	std::vector<MeshRef> meshes;
+
 	Assimp::Importer importer;
 	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
-		return NULL;
+		return meshes;
 	}
 
 	cout << scene->mNumMeshes << endl;
 
-    aiMesh *mesh = scene->mMeshes[0];
+	for (int meshNum = 0; meshNum < scene->mNumMeshes; meshNum++)
+	{
+	    aiMesh *mesh = scene->mMeshes[meshNum];
 
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec3> normals;
-    std::vector<glm::vec2> texCoords;
 
-    bool hasTexCoords = mesh->mTextureCoords[0];
+	    std::vector<glm::vec3> vertices;
+	    std::vector<glm::vec3> normals;
+	    std::vector<glm::vec2> texCoords;
 
-    for (int i = 0; i < mesh->mNumVertices; i++) {
-    	glm::vec3 vert;
-    	vert.x = mesh->mVertices[i].x;
-    	vert.y = mesh->mVertices[i].y;
-    	vert.z = mesh->mVertices[i].z;
-    	vertices.push_back(vert);
+	    bool hasTexCoords = mesh->mTextureCoords[0];
 
-        if (mesh->HasNormals())
-        {
-        	glm::vec3 norm;
-        	norm.x = mesh->mNormals[i].x;
-        	norm.y = mesh->mNormals[i].y;
-        	norm.z = mesh->mNormals[i].z;
-        	normals.push_back(norm);
-        }
+	    for (int i = 0; i < mesh->mNumVertices; i++) {
+	    	glm::vec3 vert;
+	    	vert.x = mesh->mVertices[i].x;
+	    	vert.y = mesh->mVertices[i].y;
+	    	vert.z = mesh->mVertices[i].z;
+	    	vertices.push_back(vert);
 
-        if (hasTexCoords)
-        {
-        	texCoords.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
-        }
-    }
+	        if (mesh->HasNormals())
+	        {
+	        	glm::vec3 norm;
+	        	norm.x = mesh->mNormals[i].x;
+	        	norm.y = mesh->mNormals[i].y;
+	        	norm.z = mesh->mNormals[i].z;
+	        	normals.push_back(norm);
+	        }
 
-    std::vector<unsigned int> indices;
-    for(int i = 0; i < mesh->mNumFaces; i++)
-    {
-    	aiFace face = mesh->mFaces[i];
-    	// Retrieve all indices of the face and store them in the indices vector
-    	for(int j = 0; j < face.mNumIndices; j++)
-    		indices.push_back(face.mIndices[j]);
-    }
+	        if (hasTexCoords)
+	        {
+	        	texCoords.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+	        }
+	    }
 
-    std::string directory = "";
-    int lastFolderIndex = path.find_last_of('/');
-    if (lastFolderIndex < 0)
-    {
-    	lastFolderIndex = path.find_last_of('\\');
-    }
+	    std::vector<unsigned int> indices;
+	    for(int i = 0; i < mesh->mNumFaces; i++)
+	    {
+	    	aiFace face = mesh->mFaces[i];
+	    	// Retrieve all indices of the face and store them in the indices vector
+	    	for(int j = 0; j < face.mNumIndices; j++)
+	    		indices.push_back(face.mIndices[j]);
+	    }
 
-    if (lastFolderIndex >= 0)
-    {
-    	directory = path.substr(0, lastFolderIndex+1);
-    }
+	    std::string directory = "";
+	    int lastFolderIndex = path.find_last_of('/');
+	    if (lastFolderIndex < 0)
+	    {
+	    	lastFolderIndex = path.find_last_of('\\');
+	    }
 
-    MeshRef finalMesh;
+	    if (lastFolderIndex >= 0)
+	    {
+	    	directory = path.substr(0, lastFolderIndex+1);
+	    }
 
-    if (mesh->HasNormals())
-    {
-        finalMesh = MeshRef(new Mesh(vertices, normals, indices));
-    }
-    else
-    {
-        finalMesh = MeshRef(new Mesh(vertices, indices));
-    }
+	    MeshRef finalMesh;
 
-    if (hasTexCoords)
-    {
-    	finalMesh->setTexCoords(texCoords);
-    }
+	    if (mesh->HasNormals())
+	    {
+	        finalMesh = MeshRef(new Mesh(vertices, normals, indices));
+	    }
+	    else
+	    {
+	        finalMesh = MeshRef(new Mesh(vertices, indices));
+	    }
 
-    if (mesh->mMaterialIndex >= 0)
-    {
-    	aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-    	int texCount = material->GetTextureCount(aiTextureType_DIFFUSE);
-    	if (texCount > 0)
-    	{
-    		aiString str;
-    		material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
-    		finalMesh->setTexture(TextureRef(new SOILTexture(directory + std::string(str.C_Str()))));
-    	    //_texture = TextureRef(new SOILTexture(directory + std::string(str.C_Str())));
-    	}
-    }
+	    if (hasTexCoords)
+	    {
+	    	finalMesh->setTexCoords(texCoords);
+	    }
 
-    return finalMesh;
+	    if (mesh->mMaterialIndex >= 0)
+	    {
+	    	aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+	    	int texCount = material->GetTextureCount(aiTextureType_DIFFUSE);
+	    	cout << texCount << " count" << endl;
+	    	if (texCount > 0)
+	    	{
+	    		aiString str;
+	    		material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
+	    		cout << std::string(str.C_Str()) << endl;
+	    		finalMesh->setTexture(TextureRef(new SOILTexture(directory + std::string(str.C_Str()))));
+	    	    //_texture = TextureRef(new SOILTexture(directory + std::string(str.C_Str())));
+	    	}
+	    }
+
+	    meshes.push_back(finalMesh);
+	}
+
+    return meshes;
 }
 
 /*
@@ -484,7 +498,7 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	lightPositions[0] = glm::vec4(0.5, 0, 3, 1);
 
 	glm::vec4 lightK[1];
-	lightK[0] = glm::vec4(0.2, 0.7, 0.5, 50);
+	lightK[0] = glm::vec4(0.2, 0.7, 0.3, 20);
 
 //    GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
 //    GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light

@@ -23,6 +23,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "scene/CompositeScene.h"
 
 namespace Spatialize {
 
@@ -50,7 +51,7 @@ private:
 	void initVBO(int threadId);
 
 	//std::map<int, SceneRef> _scene;
-	SceneRef _scene;
+	CompositeSceneRef _scene;
 	float _startTime;
 	int _numFrames;
 	float _time;
@@ -74,7 +75,7 @@ private:
     TextureRef _texture;
 //    std::map<std::string, TextureRef> _textureMap;
 
-    MeshRef loadModel(std::string path);
+    std::vector<MeshRef> loadModel(std::string path);
 
     /*void loadModel(std::string path);
     void processNodeTextures(aiNode *node, const aiScene *scene);
