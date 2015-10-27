@@ -53,10 +53,10 @@ Window1_Viewport2_Width				600
 Window1_Viewport2_Height			300
 Window1_Viewport2_X					0
 Window1_Viewport2_Y					0
-Window1_Viewport2_TopLeft           (-1.0, 0.0, -0.5)
-Window1_Viewport2_TopRight          ( 1.0, 0.0, -0.5)
-Window1_Viewport2_BotLeft           (-1.0,-0.0, 0.5)
-Window1_Viewport2_BotRight          ( 1.0,-0.0, 0.5)
+Window1_Viewport2_TopLeft           (-2.0, 0.0, -1.0)
+Window1_Viewport2_TopRight          ( 2.0, 0.0, -1.0)
+Window1_Viewport2_BotLeft           (-2.0,-0.0, 1.0)
+Window1_Viewport2_BotRight          ( 2.0,-0.0, 1.0)
 Window1_Viewport2_NearClip          0.01
 Window1_Viewport2_FarClip           100.0
 

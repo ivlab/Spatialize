@@ -366,6 +366,7 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	_shader->setParameter("lightCount", (GLuint)1);
 	_shader->setParameter("hasTexCoords", (GLuint)0);
 	_shader->setParameter("tex", 0);
+	_shader->setParameter("clip", renderDevice.getWindowInfo().viewportIndex != 1 && renderDevice.getWindowInfo().threadId != 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _texture->getId());

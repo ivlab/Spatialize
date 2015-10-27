@@ -12,9 +12,12 @@ uniform vec4 lightK[10];
 uniform int lightCount;
 uniform vec3 viewdir;
 uniform bool hasTexCoords;
+uniform bool clip;
 
 void main()
 {   
+	//if (pos.z > 0.0 && clip) { discard; }
+
 	color = vec4(0.7,0.7,0.7,1.0);
 	if (hasTexCoords)
 	{
@@ -31,7 +34,14 @@ void main()
     	float kd = lightK[i].y;
     	float ks = lightK[i].z;
     	float n = lightK[i].w;
-    	I += ka*color.xyz + kd*color.xyz*max(0,dot(L,N)) + ks*vec3(1.0)*pow(min(1.0,max(0,dot(H,N))),n);
+    	
+    	float LdotN = dot(L,N);
+    	float HdotN = dot(H,N);
+    	float diffVal = 1.0f;
+    	float specVal = 1.0f;
+    	if (LdotN < 0.0) { diffVal = 0.3; }
+    	if (HdotN < 0.0) { specVal = 0.2; }
+    	I += ka*color.xyz + diffVal*kd*color.xyz*max(0,abs(LdotN)) + specVal*ks*vec3(1.0)*pow(min(1.0,max(0,abs(HdotN))),n);
     }
     
     I.x = min(1.0, I.x);
