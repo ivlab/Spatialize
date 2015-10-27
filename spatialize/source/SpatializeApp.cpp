@@ -231,7 +231,7 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 			glm::dvec4 data = events[i]->get4DData();
 			glm::vec2 newVertPos = glm::vec2(data.x, data.y);
 			float diff = glm::length(newVertPos-_pos0) - glm::length(_vertPos-_pos0);
-			_translation += glm::vec3(0.0f, diff, 0.0f);
+			_translation -= glm::vec3(0.0f, diff, 0.0f);
 			_vertPos = newVertPos;
 		}
 		else if (MinVR::startsWith(name, "Touch_Cursor_Up0"))
@@ -330,11 +330,23 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	const Box& box = scene->getBoundingBox();
 	float size = glm::length((box.getHigh()-box.getLow()));
 
+	if (renderDevice.getWindowInfo().viewportIndex == 1 || (renderDevice.getWindowInfo().threadId == 0 && renderDevice.getWindowInfo().window->getNumViewports() == 1))
+	{
+		glClearColor(0, 0, 0, 0);                   // background color
+	}
+	else {
+		glClearColor(1, 1, 1, 1);
+	}
 
-	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
+	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans)*glm::dvec3(1.0,renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1 ? 0.0 : 1.0,1.0));
 	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
 	glm::dmat4 rot = glm::rotate(scale, _rotationAngle, glm::dvec3(0.0, 1.0, 0.0));
+	if (renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1)
+	{
+		rot = glm::scale(rot, glm::dvec3(1.0, 0.0, 1.0));
+	}
 	trans = glm::translate(rot, glm::dvec3(-(box.center())));
+
 
 	renderDevice.getWindowInfo().getCamera()->setObjectToWorldMatrix(trans);
 
