@@ -26,7 +26,7 @@ using namespace std;
 
 namespace Spatialize {
 
-SpatializeApp::SpatializeApp(GLchar *path = NULL) : MinVR::AbstractMVRApp(), _scene(new CompositeScene()) {
+SpatializeApp::SpatializeApp(GLchar *path) : MinVR::AbstractMVRApp(), _scene(new CompositeScene()) {
 	_texture = TextureRef(new SOILTexture("img_test.png"));
 
 	_startTime = -1;
