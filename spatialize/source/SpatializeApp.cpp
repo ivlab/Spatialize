@@ -11,7 +11,7 @@
 #include <SpatializeApp.h>
 #include "example/ExampleCube.h"
 #include "MVRCore/StringUtils.H"
-#include <unistd.h>
+#include <io.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -330,21 +330,22 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	const Box& box = scene->getBoundingBox();
 	float size = glm::length((box.getHigh()-box.getLow()));
 
-	if (renderDevice.getWindowInfo().viewportIndex == 1 || (renderDevice.getWindowInfo().threadId == 0 && renderDevice.getWindowInfo().window->getNumViewports() == 1))
+/*	if (renderDevice.getWindowInfo().viewportIndex == 1 || (renderDevice.getWindowInfo().threadId == 0 && renderDevice.getWindowInfo().window->getNumViewports() == 1))
 	{
 		glClearColor(0, 0, 0, 0);                   // background color
 	}
 	else {
 		glClearColor(1, 1, 1, 1);
-	}
+	}*/
 
-	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans)*glm::dvec3(1.0,renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1 ? 0.0 : 1.0,1.0));
-	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale/size));
+	//glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans)*glm::dvec3(1.0, renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1 ? 0.0 : 1.0, 1.0));
+	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
+	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale / size));
 	glm::dmat4 rot = glm::rotate(scale, _rotationAngle, glm::dvec3(0.0, 1.0, 0.0));
-	if (renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1)
+	/*if (renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1)
 	{
 		rot = glm::scale(rot, glm::dvec3(1.0, 0.0, 1.0));
-	}
+	}*/
 	trans = glm::translate(rot, glm::dvec3(-(box.center())));
 
 
@@ -366,7 +367,8 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	_shader->setParameter("lightCount", (GLuint)1);
 	_shader->setParameter("hasTexCoords", (GLuint)0);
 	_shader->setParameter("tex", 0);
-	_shader->setParameter("clip", renderDevice.getWindowInfo().viewportIndex != 1 && renderDevice.getWindowInfo().threadId != 1);
+	//_shader->setParameter("clip", renderDevice.getWindowInfo().viewportIndex != 1 && renderDevice.getWindowInfo().threadId != 1);
+	_shader->setParameter("clip", 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _texture->getId());

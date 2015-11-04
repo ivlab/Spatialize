@@ -124,6 +124,7 @@ void ExampleCube::initContextItem() {
 }
 
 bool ExampleCube::updateContextItem(bool changed) {
+	return true;
 }
 
 void ExampleCube::cleanupContextItem() {

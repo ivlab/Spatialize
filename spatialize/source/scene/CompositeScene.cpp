@@ -50,6 +50,7 @@ bool CompositeScene::updateContextItem(bool changed) {
 	{
 		_scenes[f]->updateContext();
 	}
+	return true;
 }
 
 void CompositeScene::cleanupContextItem() {
