@@ -189,6 +189,19 @@ if (BUILD_DEPENDENCIES)
 		PATCH_COMMAND ${soil_PATCH}
 		UPDATE_COMMAND ""
    )
+   
+   set(plugin_INSTALL_DIR "${Spatialize_INSTALL_PREFIX}/PluginFW")
+   set(plugin_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${plugin_INSTALL_DIR}")
+
+   ExternalProject_add(PluginFW
+		PREFIX "${CMAKE_SOURCE_DIR}/dependencies/PluginFW"
+		GIT_REPOSITORY https://github.com/ivlab/PluginFramework.git
+		GIT_TAG master
+		INSTALL_DIR "${plugin_INSTALL_DIR}"
+		CMAKE_ARGS "${plugin_CMAKE_ARGS}"
+		PATCH_COMMAND ""
+		UPDATE_COMMAND ""
+   )
 
    set_property(TARGET SOIL PROPERTY FOLDER "Dependencies")
 

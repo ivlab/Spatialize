@@ -80,3 +80,7 @@ clobber:
 	rm -rf ./build
 	rm -rf ./install
 	rm -rf ../$(DIRNAME)_eclipse
+	rm -rf ./dependencies/assimp
+	rm -rf ./dependencies/SOIL/src
+	rm -rf ./dependencies/SOIL/tmp
+	rm -rf ./dependencies/PluginFW

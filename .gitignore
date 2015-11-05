@@ -55,3 +55,4 @@ Data
 # dependencies
 dependencies/assimp
 dependencies/SOIL
+dependencies/PluginFW
