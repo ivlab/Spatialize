@@ -11,7 +11,6 @@
 #include <SpatializeApp.h>
 #include "example/ExampleCube.h"
 #include "MVRCore/StringUtils.H"
-#include <io.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
