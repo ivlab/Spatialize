@@ -25,7 +25,7 @@ namespace Spatialize {
 
 ExampleCube::ExampleCube() {
 
-	_boundingBox = Box(glm::vec3(-0.25f), glm::vec3(0.25f));
+	_boundingBox = vrbase::Box(glm::vec3(-0.25f), glm::vec3(0.25f));
 }
 
 ExampleCube::~ExampleCube() {
@@ -131,7 +131,7 @@ void ExampleCube::cleanupContextItem() {
 	glDeleteBuffersARB(1, _vboId.get());
 }
 
-const Box& ExampleCube::getBoundingBox() {
+const vrbase::Box& ExampleCube::getBoundingBox() {
 	return _boundingBox;
 }
 

@@ -18,12 +18,12 @@
 #include <vector>
 #include <map>
 #include <cmath>
-#include "Scene.h"
+#include "vrbase/Scene.h"
 #include "MVRCore/Thread.h"
-#include "Mesh.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "scene/CompositeScene.h"
+#include "vrbase/Mesh.h"
+#include "vrbase/Shader.h"
+#include "vrbase/Texture.h"
+#include "vrbase/scene/CompositeScene.h"
 
 namespace Spatialize {
 
@@ -51,7 +51,7 @@ private:
 	void initVBO(int threadId);
 
 	//std::map<int, SceneRef> _scene;
-	CompositeSceneRef _scene;
+	vrbase::CompositeSceneRef _scene;
 	float _startTime;
 	int _numFrames;
 	float _time;
@@ -71,11 +71,11 @@ private:
     float _tempScale;
     GLchar* _path;
     double _syncTime;
-    ShaderRef _shader;
-    TextureRef _texture;
+    vrbase::ShaderRef _shader;
+    vrbase::TextureRef _texture;
 //    std::map<std::string, TextureRef> _textureMap;
 
-    std::vector<MeshRef> loadModel(std::string path);
+    std::vector<vrbase::MeshRef> loadModel(std::string path);
 
     /*void loadModel(std::string path);
     void processNodeTextures(aiNode *node, const aiScene *scene);

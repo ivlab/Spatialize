@@ -31,22 +31,13 @@ set (SOURCEFILES
 		spatialize/source/main.cpp
 		spatialize/source/SpatializeApp.cpp
 		spatialize/source/example/ExampleCube.cpp
-		spatialize/source/scene/CompositeScene.cpp
 		spatialize/source/texture/SOILTexture.cpp
-		spatialize/source/Box.cpp
-		spatialize/source/Mesh.cpp
-		spatialize/source/Shader.cpp
-		spatialize/source/Texture.cpp)
+		)
 set (HEADERFILES 
 		spatialize/include/SpatializeApp.h
-		spatialize/include/Scene.h
 		spatialize/include/example/ExampleCube.h
-		spatialize/include/scene/CompositeScene.h
 		spatialize/include/texture/SOILTexture.h
-		spatialize/include/Box.h
-		spatialize/include/Shader.h
-		spatialize/include/Mesh.h
-		spatialize/include/Texture.h)
+		)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
@@ -59,6 +50,12 @@ source_group("Header Files" FILES ${HEADERFILES})
 set(MinVR_DIR $ENV{MinVR_DIR})
 find_package(MinVR COMPONENTS MVRCore AppKit_GLFW REQUIRED)
 include_directories(${MinVR_INCLUDE_DIRS})
+include_directories(${MinVR_DIR}/VRBase/include)
+if(MSVC)
+	set(VRBASE_LIBRARY debug vrbased.lib optimized vrbase.lib CACHE INTERNAL "vrbase lib file")
+else()
+	set(VRBASE_LIBRARY debug libvrbased.a optimized libvrbase.a CACHE INTERNAL "vrbase lib file")
+endif()	
 
 ############################################################
 #End external library searching
@@ -76,6 +73,7 @@ include_directories (
 # If you want to add any link directories you can add them here
 link_directories (
   ${Spatialize_BINARY_DIR}
+  ${MinVR_DIR}/VRBase/lib
 )
 
 ############################################################
@@ -267,7 +265,7 @@ add_executable(spatialize ${HEADERFILES} ${SOURCEFILES})
 #indepdent way it would appear in the command line (i.e. -l<libtoadd>)
 #If the second is way is used you need to sure the directory the lib is
 #in will be found
-target_link_libraries (spatialize ${MinVR_LIBRARIES} ${LIBASSIMP_LIBRARIES} ${SOIL_LIBRARY} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
+target_link_libraries (spatialize ${MinVR_LIBRARIES} ${VRBASE_LIBRARY} ${LIBASSIMP_LIBRARIES} ${SOIL_LIBRARY} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
 
 #Second an example of a library target
 #It should default to making a static library

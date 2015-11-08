@@ -22,6 +22,7 @@
 
 using namespace MinVR;
 using namespace std;
+using namespace vrbase;
 
 namespace Spatialize {
 

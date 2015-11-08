@@ -9,12 +9,12 @@
 #ifndef SOILTEXTURE_H_
 #define SOILTEXTURE_H_
 
-#include "Texture.h"
+#include "vrbase/Texture.h"
 #include <string>
 
 namespace Spatialize {
 
-class SOILTexture : public Texture {
+class SOILTexture : public vrbase::Texture {
 public:
 	SOILTexture(const std::string& filepath);
 	virtual ~SOILTexture();

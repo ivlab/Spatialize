@@ -9,13 +9,13 @@
 #ifndef EXAMPLECUBE_H_
 #define EXAMPLECUBE_H_
 
-#include "Scene.h"
-#include "Shader.h"
+#include "vrbase/Scene.h"
+#include "vrbase/Shader.h"
 #include "GL/glew.h"
 
 namespace Spatialize {
 
-class ExampleCube : public Scene {
+class ExampleCube : public vrbase::Scene {
 public:
 	ExampleCube();
 	virtual ~ExampleCube();
@@ -23,12 +23,12 @@ public:
 	virtual void initContextItem();
 	virtual bool updateContextItem(bool changed);
 	virtual void cleanupContextItem();
-	const Box& getBoundingBox();
+	const vrbase::Box& getBoundingBox();
 	void draw(MinVR::RenderDevice& renderDevice);
 
 private:
 	MinVR::ContextSpecificPtr<GLuint> _vboId;
-	Box _boundingBox;
+	vrbase::Box _boundingBox;
 };
 
 } /* namespace Spatialize */
