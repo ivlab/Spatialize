@@ -6,20 +6,25 @@ Spatialize is an open source software package for loading and manipulating 3D mo
 
 Set environment variables (i.e. execute in .bashrc)
   ```
-  export MinVR_DIR={path to where you cloned MinVR}MinVR/build/install/MinVR
-  
-  OR
-
-  open up build.sh, uncomment line 2 and insert your path
+  export MinVR_DIR=/path/to/install/MinVR
   ```
 
 Build the project:
   ```
-  ./build.sh
+  make
+  # build release
+  make opt
+  # build debug
+  make debug
+  ```
+
+Install the project:
+  ```
+  make install
   ```
 
 Run the program:
   ```
-  ./run.sh {path to model}
+  ./build/Release/spatialize {path to model}
   ```
 
