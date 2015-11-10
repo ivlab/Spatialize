@@ -161,9 +161,13 @@ if (BUILD_DEPENDENCIES)
 		set(assimp_CMAKE_ARGS ${assimp_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
    endif()
 
+   find_package(GIT)
+   
    if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		set(GIT_EXECUTABLE "C:/Program Files (x86)/Git/bin/git.exe")
    endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+   
+   find_package(GIT)
    
    ExternalProject_add(assimp
 		PREFIX ${assimp_PREFIX}
@@ -178,7 +182,7 @@ if (BUILD_DEPENDENCIES)
 
    set(soil_PATCH ${CMAKE_COMMAND} -E copy ${soil_PREFIX}/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt)
    set(soil_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${soil_INSTALL_DIR}")
-
+   
    ExternalProject_add(SOIL
 		PREFIX ${soil_PREFIX}
 		URL http://www.lonesock.net/files/soil.zip
@@ -190,7 +194,7 @@ if (BUILD_DEPENDENCIES)
    
    set(plugin_INSTALL_DIR "${Spatialize_INSTALL_PREFIX}/PluginFW")
    set(plugin_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${plugin_INSTALL_DIR}")
-
+   
    ExternalProject_add(PluginFW
 		PREFIX "${CMAKE_SOURCE_DIR}/dependencies/PluginFW"
 		GIT_REPOSITORY https://github.com/ivlab/PluginFramework.git
@@ -201,7 +205,7 @@ if (BUILD_DEPENDENCIES)
 		UPDATE_COMMAND ""
    )
 
-   set_property(TARGET SOIL PROPERTY FOLDER "Dependencies")
+   set_property(TARGET PluginFW PROPERTY FOLDER "Dependencies")
 
 endif()
 
