@@ -15,6 +15,9 @@
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "texture/SOILTexture.h"
+#include "vrbase/event/mouse/MouseTranslator.h"
+#include "vrbase/event/mouse/MouseTrackball.h"
+#include "vrbase/event/mouse/MouseScale.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -28,6 +31,12 @@ namespace Spatialize {
 
 SpatializeApp::SpatializeApp(GLchar *path) : MinVR::AbstractMVRApp(), _scene(new CompositeScene()) {
 	_texture = TextureRef(new SOILTexture("img_test.png"));
+
+	_trans = glm::dmat4(1.0);
+	_rot = glm::dmat4(1.0);
+	_eventListeners.push_back(EventListenerRef(new MouseTranslator(&_trans)));
+	_eventListeners.push_back(EventListenerRef(new MouseTrackball(&_rot)));
+	_eventListeners.push_back(EventListenerRef(new MouseScale(&_scaleMat)));
 
 	_startTime = -1;
 	_numFrames = 0;
@@ -172,7 +181,12 @@ void SpatializeApp::doUserInputAndPreDrawComputation(
 	_syncTime = synchronizedTime;
 
 	for(int i=0; i < events.size(); i++) {
-		std::cout << events[i]->getName() <<std::endl;
+		for (int f = 0; f < _eventListeners.size(); f++)
+		{
+			_eventListeners[f]->handleEvent(events[i], synchronizedTime);
+		}
+
+		//std::cout << events[i]->getName() <<std::endl;
 
 		//std::string down = ;
 		std::string name = events[i]->getName();
@@ -339,9 +353,12 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 	}*/
 
 	//glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans)*glm::dvec3(1.0, renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1 ? 0.0 : 1.0, 1.0));
-	glm::dmat4 trans = glm::translate(glm::dmat4(1.0f), glm::dvec3(_translation + _tempTrans));
-	glm::dmat4 scale = glm::scale(trans, glm::dvec3(1.0f*_scale*_tempScale / size));
+	glm::dmat4 trans = _trans;
+	trans = glm::translate(trans, glm::dvec3(_translation + _tempTrans));
+	glm::dmat4 scale = trans*_scaleMat;
+	scale = glm::scale(scale, glm::dvec3(1.0f*_scale*_tempScale / size));
 	glm::dmat4 rot = glm::rotate(scale, _rotationAngle, glm::dvec3(0.0, 1.0, 0.0));
+	rot = rot*_rot;
 	/*if (renderDevice.getWindowInfo().viewportIndex == 1 || renderDevice.getWindowInfo().threadId == 1)
 	{
 		rot = glm::scale(rot, glm::dvec3(1.0, 0.0, 1.0));

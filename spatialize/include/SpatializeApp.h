@@ -24,6 +24,7 @@
 #include "vrbase/Shader.h"
 #include "vrbase/Texture.h"
 #include "vrbase/scene/CompositeScene.h"
+#include "vrbase/EventListener.h"
 
 namespace Spatialize {
 
@@ -73,6 +74,10 @@ private:
     double _syncTime;
     vrbase::ShaderRef _shader;
     vrbase::TextureRef _texture;
+    glm::dmat4 _trans;
+    glm::dmat4 _rot;
+    glm::dmat4 _scaleMat;
+    std::vector<vrbase::EventListenerRef> _eventListeners;
 //    std::map<std::string, TextureRef> _textureMap;
 
     std::vector<vrbase::MeshRef> loadModel(std::string path);
