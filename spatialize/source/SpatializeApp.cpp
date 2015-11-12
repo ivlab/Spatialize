@@ -376,9 +376,9 @@ void SpatializeApp::drawGraphics(MinVR::RenderDevice& renderDevice) {
 
 	_shader->useProgram();
 	_shader->setParameter("model", glm::mat4(trans));//glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getObjectToWorldMatrix()));
-	_shader->setParameter("view", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedViewMatrix()));
-	_shader->setParameter("projection", glm::mat4(renderDevice.getWindowInfo().getOffAxisCamera()->getLastAppliedProjectionMatrix()));
-	_shader->setParameter("viewdir", glm::vec3(renderDevice.getWindowInfo().getOffAxisCamera()->getLookVector()));
+	_shader->setParameter("view", glm::mat4(renderDevice.getWindowInfo().getCamera()->getLastAppliedViewMatrix()));
+	_shader->setParameter("projection", glm::mat4(renderDevice.getWindowInfo().getCamera()->getLastAppliedProjectionMatrix()));
+	_shader->setParameter("viewdir", glm::vec3(renderDevice.getWindowInfo().getCamera()->getLookVector()));
 	_shader->setParameter("lightPositions", lightPositions, 1);
 	_shader->setParameter("lightK", lightK, 1);
 	_shader->setParameter("lightCount", (GLuint)1);
